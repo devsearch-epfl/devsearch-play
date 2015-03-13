@@ -12,3 +12,10 @@ libraryDependencies ++= Seq(
   cache,
   ws
 )
+
+// Webjars
+
+libraryDependencies ++= Seq(
+  "org.webjars" % "materializecss" % "0.95.3",
+  "org.webjars" % "jquery" % "2.1.3"
+)
