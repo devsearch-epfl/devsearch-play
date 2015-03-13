@@ -1,4 +1,4 @@
-name := """DevSearch"""
+name := """devsearch-play"""
 
 version := "1.0-SNAPSHOT"
 
