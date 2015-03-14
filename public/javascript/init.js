@@ -1,0 +1,2 @@
+
+SyntaxHighlighter.all()

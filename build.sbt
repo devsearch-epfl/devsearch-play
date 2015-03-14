@@ -17,5 +17,12 @@ libraryDependencies ++= Seq(
 
 libraryDependencies ++= Seq(
   "org.webjars" % "materializecss" % "0.95.3",
-  "org.webjars" % "jquery" % "2.1.3"
+  "org.webjars" % "jquery" % "2.1.3",
+  "org.webjars" % "syntaxhighlighter" % "3.0.83"
 )
+
+// Less configuration
+
+includeFilter in (Assets, LessKeys.less) := "*.less"
+
+excludeFilter in (Assets, LessKeys.less) := "_*.less"
