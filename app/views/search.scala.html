@@ -7,40 +7,42 @@
 
                 <!--   Icon Section   -->
             <div class="row">
-                <div class="input-field col m12">
+                <div class="input-field col m11">
                     <i class="mdi-hardware-keyboard-arrow-right prefix"></i>
                     <label for="code-paste1">Paste your code</label>
                     <textarea rows="8" id="code-paste1" class="materialize-textarea"></textarea>
                 </div>
+                <div class="col m1">
+                    <button class="btn-floating btn-large waves-effect waves-light light-blue" type="submit" name="action">
+                        <i class="large mdi-action-search"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="row">
 
-                @for(i <- 1 to 10) {
-                    <div class="col m6">
-                        <div class="card">
-                            <div class="card-content">
-                                <span class="card-title activator grey-text text-darken-4">Code Example #@i <i class="mdi-navigation-more-vert right"></i></span>
-                                <div class="card-image waves-effect waves-block waves-light">
-                                    <pre class="brush: scala">
-                                    @{"""
-                                        |object Application extends Controller {
-                                        |   def index = Action {
-                                        |       Ok(views.html.index("Your new application is ready."))
-                                        |   }
-                                        |
-                                        |   def search = Action {
-                                        |       Ok(views.html.search())
-                                        |   }
-                                        |}""".stripMargin}
-                                    </pre>
-                                </div>
-                                <p><a href="https://github.com/devsearch-epfl/devsearch-play/blob/master/app/controllers/Application.scala" class="light-blue-text">See code</a></p>
+            @for(i <- 1 to 10) {
+                <div class="col l4 m6 s12">
+                    <div class="card">
+                        <div class="card-content">
+                            <span class="card-title activator grey-text text-darken-4">Code Example #@i <i class="mdi-navigation-more-vert right"></i></span>
+                            <div class="card-image waves-effect waves-block waves-light">
+                                <pre class="brush: scala">
+                                @{ """
+                                        |def search = Action {
+                                        |   Ok(views.html.search())
+                                        |}""".stripMargin
+                                }
+                                </pre>
                             </div>
-                            <div class="card-reveal">
-                                <span class="card-title grey-text text-darken-4">Code snippet <i class="mdi-navigation-close right"></i></span>
-                                <p>Here is some more information about this code snippet, like language, date, developper etc...</p>
-                            </div>
+                            <p><a href="https://github.com/devsearch-epfl/devsearch-play/blob/master/app/controllers/Application.scala" class="light-blue-text">See code</a></p>
+                        </div>
+                        <div class="card-reveal">
+                            <span class="card-title grey-text text-darken-4">Code snippet <i class="mdi-navigation-close right"></i></span>
+                            <p>Here is some more information about this code snippet, like language, date, developper etc...</p>
                         </div>
                     </div>
-                }
+                </div>
+            }
 
             </div>
 
