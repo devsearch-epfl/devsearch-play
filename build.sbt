@@ -17,8 +17,7 @@ libraryDependencies ++= Seq(
 
 libraryDependencies ++= Seq(
   "org.webjars" % "materializecss" % "0.95.3",
-  "org.webjars" % "jquery" % "2.1.3",
-  "org.webjars" % "syntaxhighlighter" % "3.0.83"
+  "org.webjars" % "jquery" % "2.1.3"
 )
 
 // Less configuration
