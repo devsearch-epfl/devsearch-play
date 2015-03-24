@@ -1,4 +1,4 @@
-package search
+package services
 
 case class SearchResults(entries: List[SearchResultEntry])
 case class SearchResultEntry(path: String)
