@@ -1,4 +1,5 @@
-@()
+import search.SearchResults
+@(query: Option[String], results: Option[SearchResults])
 
 @main("Search Code") {
 
@@ -7,16 +8,18 @@
 
                 <!--   Icon Section   -->
             <div class="row">
-                <div class="input-field col m11">
-                    <i class="mdi-hardware-keyboard-arrow-right prefix"></i>
-                    <label for="code-paste1">Paste your code</label>
-                    <textarea rows="8" id="code-paste1" class="materialize-textarea"></textarea>
-                </div>
-                <div class="col m1">
-                    <button class="btn-floating btn-large waves-effect waves-light light-blue" type="submit" name="action">
-                        <i class="large mdi-action-search"></i>
-                    </button>
-                </div>
+                <form method="GET">
+                    <div class="input-field col m11">
+                        <i class="mdi-hardware-keyboard-arrow-right prefix"></i>
+                        <label for="code-paste1">Paste your code</label>
+                        <textarea rows="8" id="code-paste1" class="materialize-textarea" name="q">@query.getOrElse("")</textarea>
+                    </div>
+                    <div class="col m1">
+                        <button class="btn-floating btn-large waves-effect waves-light light-blue" type="submit">
+                            <i class="large mdi-action-search"></i>
+                        </button>
+                    </div>
+                </form>
             </div>
             <div class="row">
 
