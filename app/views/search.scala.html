@@ -1,34 +1,37 @@
-@()
+@(query: Option[String], results: Option[services.SearchResults])
 
 @main("Search Code") {
 
     <div class="container">
         <div class="section">
 
-                <!--   Icon Section   -->
+            <!--   Icon Section   -->
             <div class="row">
-                <div class="input-field col m11">
-                    <i class="mdi-hardware-keyboard-arrow-right prefix"></i>
-                    <label for="code-paste1">Paste your code</label>
-                    <textarea rows="8" id="code-paste1" class="materialize-textarea"></textarea>
-                </div>
-                <div class="col m1">
-                    <button class="btn-floating btn-large waves-effect waves-light light-blue" type="submit" name="action">
-                        <i class="large mdi-action-search"></i>
-                    </button>
-                </div>
+                <form method="GET">
+                    <div class="input-field col m11">
+                        <i class="mdi-hardware-keyboard-arrow-right prefix"></i>
+                        <label for="code-paste1">Paste your code here</label>
+                        <textarea rows="8" id="code-paste1" class="materialize-textarea" name="q">@query.getOrElse("")</textarea>
+                    </div>
+                    <div class="col m1">
+                        <button class="btn-floating btn-large waves-effect waves-light light-blue" type="submit">
+                            <i class="large mdi-action-search"></i>
+                        </button>
+                    </div>
+                </form>
             </div>
             <div class="row">
 
-            @for(i <- 1 to 10) {
-                <div class="col l4 m6 s12">
+            @for(entry <- results.map(_.entries).getOrElse(Nil)) {
+                <div class="col s12">
                     <div class="card">
                         <div class="card-content">
-                            <span class="card-title activator grey-text text-darken-4">Code Example #@i <i class="mdi-navigation-more-vert right"></i></span>
+                            <span class="card-title activator grey-text text-darken-4">@entry.path<i class="mdi-navigation-more-vert right"></i></span>
                             <div class="card-image waves-effect waves-block waves-light">
                                 <pre class="brush: scala; first-line: 10; toolbar: false;">
                                 @{ """
-                                        |def search = Action {
+                                        |def thisIsAPlaceholder = Action {
+                                        |   println("WTF")
                                         |   Ok(views.html.search())
                                         |}""".stripMargin
                                 }
