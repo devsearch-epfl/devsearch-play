@@ -1,4 +1,6 @@
 language: scala
 env:
   - PLAY_VERSION=2.3.8
-script: activator test
+before_script: 
+  - ./pre_build.sh
+script: ./activator-*/activator test
