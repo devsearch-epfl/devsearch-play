@@ -14,5 +14,4 @@ object Application extends Controller {
     val results: Option[SearchResults] = q.map(SearchService.get)
     Ok(views.html.search(q, results))
   }
-
 }
