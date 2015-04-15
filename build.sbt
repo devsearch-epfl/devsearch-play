@@ -18,7 +18,8 @@ libraryDependencies ++= Seq(
   "org.webjars" % "materializecss" % "0.95.3",
   "org.webjars" % "jquery" % "2.1.3",
   "com.decodified" %% "scala-ssh" % "0.7.0",
-  "xalan" % "serializer" % "2.7.2"
+  "xalan" % "serializer" % "2.7.2",
+  "default" %% "devsearch-ast" % "0.1"
 )
 
 // Less configuration

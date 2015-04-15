@@ -2,6 +2,11 @@
 
 This is the front-end web application for DevSearch.
 
+
+## Dependency import
+
+- The devsearch-ast has been imported by locally publishing it. Clone the devsearch-ast repo, cd into it and run sbt publishLocal
+
 ## Setup credentials
 
 - Make sure the environmental variables `BIGDATA_USER` and `BIGDATA_KEY` are set. For example, run the below before executing `sbt`:
@@ -9,9 +14,10 @@ This is the front-end web application for DevSearch.
 export BIGDATA_USER="your_epfl_username"
 export BIGDATA_KEY="path/to/your/dsa_private_key"
 
-To setup your dsa key pair, follow a simple guide such as: http://www.cyberciti.biz/faq/ssh-password-less-login-with-dsa-publickey-authentication/
+```
+- To setup your dsa key pair, follow a simple guide such as: http://www.cyberciti.biz/faq/ssh-password-less-login-with-dsa-publickey-authentication/
 Don't forget to put your public key on the server, otherwise you won't be able to connect.
-
+```
 ```
 - We need the fingerprint of the server to be stored, so make sure you can SSH into the sever from the system your are running Play.
 ```
