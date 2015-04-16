@@ -37,10 +37,13 @@ object SearchService {
         println("END Features" + features.size)
 
         println("mkstring features: " + features.size + " " + features.mkString("\'", "\' \'", "\'"))
-        //val hostConfig = PasswordLogin(System.getenv("BIGDATA_USER"), System.getenv("BIGDATA_PASSWORD"))
-        val hostConfig = PublicKeyLogin(System.getenv("BIGDATA_USER"), System.getenv("BIGDATA_KEY"))
+        val hostConfig = HostConfig(
+          //login=PublicKeyLogin(System.getenv("BIGDATA_USER"), System.getenv("BIGDATA_KEY")),
+          //login=PasswordLogin(System.getenv("BIGDATA_USER"), System.getenv("BIGDATA_PASSWORD")),
+          port=22
+        )
         val result = SSH("icdataportal2.epfl.ch", hostConfig) { client =>
-          client.exec("sh test.sh " + features.mkString("\'", "\' \'", "\'"))
+          client.exec("sh devsearch.sh " + features.mkString("\'", "\' \'", "\'"))
         }
 
         result match {
