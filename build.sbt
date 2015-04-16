@@ -19,7 +19,7 @@ libraryDependencies ++= Seq(
   "org.webjars" % "jquery" % "2.1.3",
   "com.decodified" %% "scala-ssh" % "0.7.0",
   "default" %% "devsearch-ast" % "0.1",
-  "org.scalatest" %% "scalatest" % "2.1.7" % "test"
+  "org.scalatest" %% "scalatest" % "2.1.7" % "test",
   "xalan" % "serializer" % "2.7.2"
 )
 
