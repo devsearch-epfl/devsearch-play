@@ -38,7 +38,7 @@ object SearchService {
 
         println("mkstring features: " + features.size + " " + features.mkString("\'", "\' \'", "\'"))
         val hostConfig = HostConfig(
-          //login=PublicKeyLogin(System.getenv("BIGDATA_USER"), System.getenv("BIGDATA_KEY")),
+          login=PublicKeyLogin(System.getenv("BIGDATA_USER"), System.getenv("BIGDATA_KEY")),
           //login=PasswordLogin(System.getenv("BIGDATA_USER"), System.getenv("BIGDATA_PASSWORD")),
           port=22
         )
