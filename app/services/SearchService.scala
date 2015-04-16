@@ -6,14 +6,13 @@ import scala.io.Source
 import devsearch.parsers._
 import devsearch.features._
 import scala.util._
-
+import scala.io.Source
 
 case class SearchResults(entries: Seq[SearchResultEntry])
 case class SearchResultEntry(path: String)
 
 object SearchService {
   def get(query: String): SearchResults = {
-    //val hostConfig = PasswordLogin(System.getenv("BIGDATA_USER"), System.getenv("BIGDATA_PASSWORD"))
 
     //val astQuery = List(QueryParser, JavaParser, GoParser).view.flatMap(p => Try(p.parse(query)).toOption).headOption
     val astQuery = List(QueryParser, JavaParser, GoParser).map(p => Try(p.parse(new ContentsSource("query", query)))) collectFirst { case Success(ast) => ast }
@@ -38,6 +37,7 @@ object SearchService {
         println("END Features" + features.size)
 
         println("mkstring features: " + features.size + " " + features.mkString("\'", "\' \'", "\'"))
+        //val hostConfig = PasswordLogin(System.getenv("BIGDATA_USER"), System.getenv("BIGDATA_PASSWORD"))
         val hostConfig = PublicKeyLogin(System.getenv("BIGDATA_USER"), System.getenv("BIGDATA_KEY"))
         val result = SSH("icdataportal2.epfl.ch", hostConfig) { client =>
           client.exec("sh test.sh " + features.mkString("\'", "\' \'", "\'"))

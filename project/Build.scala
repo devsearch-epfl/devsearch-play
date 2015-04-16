@@ -4,10 +4,8 @@ import sbt._
 
 object MyBuild extends Build {
 
-  lazy val root = Project("root", file("."))/*.dependsOn(astParser)*/.enablePlugins(PlayScala)
-  //lazy val astParser = RootProject(uri("git://github.com/devsearch-epfl/devsearch-ast.git"))
-
-  //lazy val astParser = RootProject(file("../devsearch-ast"))
+  lazy val root = Project("root", file(".")).dependsOn(astParser).enablePlugins(PlayScala)
+  lazy val astParser = RootProject(uri("git://github.com/devsearch-epfl/devsearch-ast.git"))
 
   /*
   object Github {
@@ -17,4 +15,3 @@ object MyBuild extends Build {
   */
 
 }
-
