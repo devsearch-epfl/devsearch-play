@@ -18,6 +18,7 @@ export BIGDATA_KEY="path/to/your/dsa_private_key"
 - To setup your dsa key pair, follow a simple guide such as: http://www.cyberciti.biz/faq/ssh-password-less-login-with-dsa-publickey-authentication/
 Don't forget to put your public key on the server, otherwise you won't be able to connect.
 ```
+
 ```
 - We need the fingerprint of the server to be stored, so make sure you can SSH into the sever from the system your are running Play.
 ```
