@@ -1,7 +1,6 @@
 language: scala
-env:
-  - PLAY_VERSION=2.3.8
-before_script: 
-  - unset SBT_OPTS JVM_OPTS
-  - ./pre_build.sh
-script: ./activator-*/activator test
+script:
+    - sbt clean update compile test
+jdk:
+    - openjdk7
+    - openjdk6
