@@ -10,3 +10,5 @@ sudo dpkg -i sbt-0.13.7.deb
 
 # clone our Play app
 git clone https://github.com/devsearch-epfl/devsearch-play.git
+
+echo '*** Setup is complete ***'
