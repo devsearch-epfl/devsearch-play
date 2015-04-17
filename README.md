@@ -8,10 +8,12 @@ This is the front-end web application for DevSearch.
 
 ## Setup credentials
 
-- Make sure the environmental variables `BIGDATA_USER` and `BIGDATA_KEY` are set. For example, run the below before executing `sbt`:
+- Make sure the environmental variables are set. For example, run the below before executing `sbt`:
 ```
 export BIGDATA_USER="your_epfl_username"
 export BIGDATA_KEY="path/to/your/dsa_private_key"
+export BIGDATA_PORT=22
+export BIGDATA_SPARK_JAR=lookup.jar
 
 - To setup your dsa key pair, follow a simple guide such as: http://www.cyberciti.biz/faq/ssh-password-less-login-with-dsa-publickey-authentication/
 Don't forget to put your public key on the server, otherwise you won't be able to connect.

@@ -36,21 +36,22 @@ object SearchService {
         features.foreach(println)
         println("END Features" + features.size)
 
-        println("mkstring features: " + features.size + " " + features.mkString("\'", "\' \'", "\'"))
         val hostConfig = HostConfig(
           login=PublicKeyLogin(System.getenv("BIGDATA_USER"), System.getenv("BIGDATA_KEY")),
           //login=PasswordLogin(System.getenv("BIGDATA_USER"), System.getenv("BIGDATA_PASSWORD")),
-          port=22
+          port=System.getenv("BIGDATA_PORT").toInt
         )
         val result = SSH("icdataportal2.epfl.ch", hostConfig) { client =>
-          client.exec("sh devsearch.sh " + features.mkString("\'", "\' \'", "\'"))
+          val command = "bash -ic \"spark-submit --master yarn-client --num-executors 25 " + System.getenv("BIGDATA_SPARK_JAR") + " " + features.mkString("\'", "\' \'", "\'") + "\""
+          println("Executing: " + command)
+          client.exec(command)
         }
 
         result match {
           case Right(cmdResult) => {
-            val lines = Source.fromInputStream(cmdResult.stdOutStream).getLines
-            println(lines)
-            SearchResults(lines.map(SearchResultEntry).toSeq)
+            val lines = Source.fromInputStream(cmdResult.stdOutStream).getLines.toSeq
+            println(lines.mkString("\n"))
+            SearchResults(lines.map(SearchResultEntry))
           }
           case Left(error) => {
             println("error: " + error)
