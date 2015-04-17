@@ -8,7 +8,7 @@ This is the front-end web application for DevSearch.
 
 ## Setup
 
-- Make sure the environment variables are set. For example, edit the file `deploy/env.sh` and define all the variables and then load it with `source deploy/env.sh`.
+- Make sure the environment variables are set. For example, edit the file `deploy/env.sh`, define all the variables and then load it with `source deploy/env.sh`.
 
 - To setup your DSA key pair, follow a simple guide such as: http://www.cyberciti.biz/faq/ssh-password-less-login-with-dsa-publickey-authentication/
 Don't forget to put your public key on the server, otherwise you won't be able to connect.
@@ -35,9 +35,9 @@ icdataportal2.epfl.ch,128.178.150.72 ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbml
 ## Azure setup
 
 - Provision the machine
-- Setup the machine:
+- Setup the machine with
 ```wget https://raw.githubusercontent.com/devsearch-epfl/devsearch-play/master/deploy/setup.sh && sh setup.sh```
-- Define the environment variables in `deploy/env.sh`
+- Define and export the environment variables in `deploy/env.sh`
 - Setup SSH tunnel
 - Compile and run the server:
 ```sh devsearch-play/deploy/start.sh```
