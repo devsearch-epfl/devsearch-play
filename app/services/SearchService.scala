@@ -41,7 +41,7 @@ object SearchService {
           //login=PasswordLogin(System.getenv("BIGDATA_USER"), System.getenv("BIGDATA_PASSWORD")),
           port=System.getenv("BIGDATA_PORT").toInt
         )
-        val result = SSH("icdataportal2.epfl.ch", hostConfig) { client =>
+        val result = SSH(System.getenv("BIGDATA_HOST"), hostConfig) { client =>
           val command = "bash -ic \"spark-submit --master yarn-client --num-executors 25 " + System.getenv("BIGDATA_SPARK_JAR") + " " + features.mkString("\'", "\' \'", "\'") + "\""
           println("Executing: " + command)
           client.exec(command)

@@ -30,10 +30,14 @@
                             <div class="card-image waves-effect waves-block waves-light">
                                 <pre class="brush: scala; first-line: 10; toolbar: false;">
                                 @{ """
-                                        |def thisIsAPlaceholder = Action {
-                                        |   println("WTF")
-                                        |   Ok(views.html.search())
-                                        |}""".stripMargin
+                                  |// In the future this will contain a preview of the matching file at the relevant location
+                                  |def placeholder(arg: SomeType) = {
+                                  |  val x = doSomethingFancy(arg.foo())
+                                  |  val y = x.bar()
+                                  |  // Well, this is just dummy code
+                                  |  x + " " + y
+                                  |}
+                                  """.stripMargin
                                 }
                                 </pre>
                             </div>
