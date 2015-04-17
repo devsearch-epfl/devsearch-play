@@ -26,7 +26,10 @@
                 <div class="col s12">
                     <div class="card">
                         <div class="card-content">
-                            <span class="card-title activator grey-text text-darken-4">@entry.path<i class="mdi-navigation-more-vert right"></i></span>
+                          <!-- todo: make this formatting better -->
+                          @entry.repo&nbsp;
+                          <span class="card-title activator grey-text text-darken-4">@entry.path<i class="mdi-navigation-more-vert right"></i></span>
+                          &nbsp;(@entry.line)
                             <div class="card-image waves-effect waves-block waves-light">
                                 <pre class="brush: scala; first-line: 10; toolbar: false;">
                                 @{ """
@@ -41,7 +44,7 @@
                                 }
                                 </pre>
                             </div>
-                            <p><a href="https://github.com/devsearch-epfl/devsearch-play/blob/master/app/controllers/Application.scala" class="light-blue-text">See code</a></p>
+                            <p><a href="https://github.com/@entry.repo/blob/master/@entry.path#L@entry.line" class="light-blue-text">See code</a></p>
                         </div>
                         <div class="card-reveal">
                             <span class="card-title grey-text text-darken-4">Code snippet <i class="mdi-navigation-close right"></i></span>

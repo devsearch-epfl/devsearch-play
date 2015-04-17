@@ -9,7 +9,7 @@ import scala.util._
 import scala.io.Source
 
 case class SearchResults(entries: Seq[SearchResultEntry])
-case class SearchResultEntry(path: String)
+case class SearchResultEntry(repo: String, path: String, line: Int)
 
 object SearchService {
   def get(query: String): SearchResults = {
@@ -51,7 +51,10 @@ object SearchService {
           case Right(cmdResult) => {
             val lines = Source.fromInputStream(cmdResult.stdOutStream).getLines.toSeq
             println(lines.mkString("\n"))
-            SearchResults(lines.map(SearchResultEntry))
+            SearchResults(lines.map(l => {
+              val Array(repo, path, lineStr) = l.split(",")
+              SearchResultEntry(repo, path, lineStr.toInt)
+            }))
           }
           case Left(error) => {
             println("error: " + error)
