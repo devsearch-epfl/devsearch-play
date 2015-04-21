@@ -2,17 +2,19 @@ package services
 
 import com.decodified.scalassh._
 import devsearch.ast.ContentsSource
+import play.api.cache.Cache
 import scala.io.Source
 import devsearch.parsers._
 import devsearch.features._
 import scala.util._
 import scala.io.Source
+import play.api.Play.current
 
 case class SearchResults(entries: Seq[SearchResultEntry])
 case class SearchResultEntry(repo: String, path: String, line: Int)
 
 object SearchService {
-  def get(query: String): SearchResults = {
+  def get(query: String): SearchResults = Cache.getOrElse(query, 3600){
 
     //val astQuery = List(QueryParser, JavaParser, GoParser).view.flatMap(p => Try(p.parse(query)).toOption).headOption
     val astQuery = List(QueryParser, JavaParser, GoParser).map(p => Try(p.parse(new ContentsSource("query", query)))) collectFirst { case Success(ast) => ast }
