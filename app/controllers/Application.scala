@@ -16,23 +16,14 @@ object Application extends Controller {
   def search(q: Option[String]) = Action.async {
     val results: Option[SearchResults] = q.map(SearchService.get)
 
-    val seq : Option[Seq[SearchResultEntry]] = results.map{_.entries}
+    val seq: Seq[SearchResultEntry] = results.map {
+      _.entries
+    }.toSeq.flatten
 
-    val withCodeSnippets = seq.map {
-      _.foldLeft(Future(Seq.empty[(String, SearchResultEntry)])){ (future, entry) =>
-          future.flatMap{
-            seq => SnippetFetcher.getSnippetCode(entry.repo, entry.path, entry.line).map(snippet => seq :+ (snippet, entry))
-          }
-      }
-    }
+    val withCodeSnippets = Future.sequence(seq.map { entry =>
+      SnippetFetcher.getSnippetCode(entry.repo, entry.path, entry.line, 10).map((_, entry))
+    })
 
-    /** swap option and future */
-    val enhancedResults = withCodeSnippets match {
-      case None => Future(None)
-      case Some(t) => t.map(Some(_))
-    }
-
-    enhancedResults.map(res => Ok(views.html.search(q, res)))
-
+    withCodeSnippets.map(res => Ok(views.html.search(q, res)))
   }
 }
