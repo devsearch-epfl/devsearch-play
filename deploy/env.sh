@@ -1,0 +1,5 @@
+export BIGDATA_HOST=
+export BIGDATA_PORT=
+export BIGDATA_USER=
+export BIGDATA_KEY=
+export BIGDATA_SPARK_JAR=

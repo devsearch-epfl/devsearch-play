@@ -6,20 +6,13 @@ This is the front-end web application for DevSearch.
 
 - The devsearch-ast has been imported by locally publishing it. Clone the devsearch-ast repo, cd into it and run sbt publishLocal
 
-## Setup credentials
+## Setup
 
-- Make sure the environmental variables are set. For example, run the below before executing `sbt`:
-```
-export BIGDATA_USER=your_epfl_username
-export BIGDATA_KEY="path/to/your/dsa_private_key"
-export BIGDATA_PORT=22
-export BIGDATA_SPARK_JAR=lookup.jar
-export BIGDATA_HOST=icdataportal2.epfl.ch
+- Make sure the environment variables are set. For example, edit the file `deploy/env.sh`, define all the variables and then load it with `source deploy/env.sh`.
 
-- To setup your dsa key pair, follow a simple guide such as: http://www.cyberciti.biz/faq/ssh-password-less-login-with-dsa-publickey-authentication/
+- To setup your DSA key pair, follow a simple guide such as: http://www.cyberciti.biz/faq/ssh-password-less-login-with-dsa-publickey-authentication/
 Don't forget to put your public key on the server, otherwise you won't be able to connect.
 
-```
 - We need the fingerprint of the server to be stored, so make sure you can SSH into the sever from the system your are running Play.
 ```
 ssh ${BIGDATA_USER}@icdataportal2.epfl.ch
@@ -38,3 +31,13 @@ icdataportal2.epfl.ch,128.178.150.72 ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbml
 
 - Run `sbt ~run`
 - Go to `http://localhost:9000`
+
+## Azure setup
+
+- Provision the machine
+- Setup the machine with
+```wget https://raw.githubusercontent.com/devsearch-epfl/devsearch-play/master/deploy/setup.sh && sh setup.sh```
+- Define and export the environment variables in `deploy/env.sh`
+- Setup SSH tunnel
+- Compile and run the server:
+```sh devsearch-play/deploy/start.sh```
