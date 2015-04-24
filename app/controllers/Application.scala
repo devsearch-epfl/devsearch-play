@@ -7,6 +7,7 @@ import services._
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 
+
 object Application extends Controller {
 
   def index = Action {

@@ -10,6 +10,7 @@ import devsearch.features._
 import scala.util._
 import scala.io.Source
 import play.api.Play.current
+import scala.concurrent.ExecutionContext.Implicits.global
 
 case class SearchResults(entries: Seq[SearchResultEntry])
 case class SearchResultEntry(repo: String, path: String, line: Int)
