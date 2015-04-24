@@ -3,6 +3,7 @@ package services
 import com.decodified.scalassh._
 import devsearch.ast.ContentsSource
 import play.api.cache.Cache
+import scala.concurrent.Future
 import scala.io.Source
 import devsearch.parsers._
 import devsearch.features._
@@ -14,14 +15,14 @@ case class SearchResults(entries: Seq[SearchResultEntry])
 case class SearchResultEntry(repo: String, path: String, line: Int)
 
 object SearchService {
-  def get(query: String): SearchResults = Cache.getOrElse(query, 3600){
-
+  def get(query: String): Future[SearchResults] = Cache.getOrElse(query, 3600){
     //val astQuery = List(QueryParser, JavaParser, GoParser).view.flatMap(p => Try(p.parse(query)).toOption).headOption
     val astQuery = List(QueryParser, JavaParser, GoParser).map(p => Try(p.parse(new ContentsSource("query", query)))) collectFirst { case Success(ast) => ast }
 
     println(query)
     println("astQuery is: "+astQuery) //always null
 
+    Future(
     astQuery match {
       case None => { //parser was not able to parse the snippet
         println("Unable to parse")
@@ -64,6 +65,6 @@ object SearchService {
           }
         }
       }
-    }
+    })
   }
 }
