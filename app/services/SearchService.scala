@@ -23,7 +23,7 @@ object SearchService {
   def get(query: String): SearchResults = {
     implicit val timeout = Timeout(Duration(1, "day")) //TODO change that...
     //val astQuery = List(QueryParser, JavaParser, GoParser).view.flatMap(p => Try(p.parse(query)).toOption).headOption
-    val astQuery = List(QueryParser, JavaParser, GoParser).map(p => Try(p.parse(new ContentsSource("query", query)))) collectFirst { case Success(ast) => ast }
+    val astQuery = List(JavaParser, GoParser, QueryParser).map(p => Try(p.parse(new ContentsSource("query", query)))) collectFirst { case Success(ast) => ast }
 
     println(query)
     println("astQuery is: " + astQuery) //always null
@@ -37,7 +37,9 @@ object SearchService {
         println("Parsed")
         //give these features as input to the spark script to do look up
 
-        val features = Features.apply(CodeFileData(CodeFileLocation("Username", "RepoName", "FileName"), ast)).map((f: Feature) => f.key).toList //For a query, we don't care about the file location
+        val features = Features(
+          CodeFileData(CodeFileLocation("dummy username", "dummy repo name", "dummy file name"), ast)
+        ).map((f: Feature) => f.key).toList
 
         println("Features: " + features.size)
         //val stringified = features.map((f:Feature) => f.key)
@@ -46,8 +48,10 @@ object SearchService {
 
         val result = clusterClient ? ClusterClient.Send("/user/lookup", features, true)
         Await.result(result, timeout.duration) match {
-          case Right(cmdResult: SearchResults) =>
-            cmdResult
+          /*case Right(cmdResult: SearchResults) =>
+            cmdResult*/
+          case Right(result: Seq[(String, String, Long)]) =>
+            SearchResults(result.map(r => SearchResultEntry(r._1, r._2, r._3.toInt)))
           case Left(error) => {
             println("error: " + error)
             SearchResults(Nil)
