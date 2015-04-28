@@ -53,7 +53,7 @@ object SearchService {
         val result: SearchResult = try {
           Await.result(resultFuture, timeout.duration)
         } catch {
-          case e: TimeoutException => SearchResultError("Timeout")
+          case e: TimeoutException => SearchResultError("Timeout.")
         }
         result match {
           case SearchResultError(message) => println(s"error: $message")

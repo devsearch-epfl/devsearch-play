@@ -25,7 +25,7 @@
 
             @result match {
               case Some(SearchResultSuccess(Seq())) => {
-                  <h3>No results found</h3>
+                  <h3>No results found.</h3>
               }
               case Some(SearchResultSuccess(entries)) => {
                 @for(entry <- entries) {
