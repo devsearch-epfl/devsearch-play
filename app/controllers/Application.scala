@@ -21,17 +21,13 @@ object Application extends Controller {
   def search(q: Option[String]) = Action.async {
 
     val timeout = 10 seconds
+    val futureResults: Future[Option[SearchResult]] = q match {
+      case Some(query) => SearchService.get(query, timeout).map(Some(_))
+      case None => Future.successful(None)
+    }
 
-    val noResults = SearchResultSuccess(Seq.empty)
-
-    val futureResults: Future[SearchResult] = q.map(query => SearchService.get(query, timeout)).getOrElse(Future.successful(noResults))
-
-    val timedOut = akka.pattern.after(timeout, Akka.system.scheduler)(Future.successful(SearchResultError("Timeout")))
-
-    val returned = Future.firstCompletedOf(Seq(futureResults, timedOut))
-
-    val snippets: Future[Map[SearchResultEntry, String]] = returned.flatMap {
-      case SearchResultSuccess(entries) =>
+    val snippets: Future[Map[SearchResultEntry, String]] = futureResults.flatMap {
+      case Some(SearchResultSuccess(entries)) =>
 
         /* Fetch all the snippets */
         val futureSnippets = entries.map(e => SnippetFetcher.getSnippetCode(e, 10).map(snip => (e, snip)))
@@ -40,9 +36,9 @@ object Application extends Controller {
         val successfulSnippets = futureSnippets.map(f => Future.sequence(List(f))).map(_.recover { case e: Throwable => Nil })
 
         Future.sequence(successfulSnippets).map(list => list.flatten.toMap)
-      case e => Future.successful(Map.empty)
+      case _ => Future.successful(Map.empty)
     }
 
-    for (results <- returned; snips <- snippets) yield Ok(views.html.search(q, results, snips))
+    for (results <- futureResults; snips <- snippets) yield Ok(views.html.search(q, results, snips))
   }
 }

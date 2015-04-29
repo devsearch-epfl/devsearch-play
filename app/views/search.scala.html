@@ -1,4 +1,4 @@
-@(query: Option[String], result: devsearch.lookup.SearchResult, snippets: Map[devsearch.lookup.SearchResultEntry, String])
+@(query: Option[String], result: Option[devsearch.lookup.SearchResult], snippets: Map[devsearch.lookup.SearchResultEntry, String])
 @import devsearch.lookup._
 
 @main("Search Code") {
@@ -24,10 +24,10 @@
             <div class="row">
 
             @result match {
-              case SearchResultSuccess(Seq()) => {
+              case Some(SearchResultSuccess(Seq())) => {
                   <h3>No results found.</h3>
               }
-              case SearchResultSuccess(entries) => {
+              case Some(SearchResultSuccess(entries)) => {
                 @for(entry <- entries) {
                     <div class="col s12">
                         <div class="card">
@@ -49,8 +49,11 @@
                     </div>
                 }
               }
-              case SearchResultError(error) => {
-                  <h3>@error</h3>
+              case Some(SearchResultError(error)) => {
+                  <h3>Something went wrong. Sorry.</h3>
+                  <p>@error</p>
+              }
+              case None => {
               }
             }
 
