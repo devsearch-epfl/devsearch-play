@@ -15,9 +15,22 @@
                         <textarea rows="8" id="code-paste1" class="materialize-textarea" name="q">@query.getOrElse("")</textarea>
                     </div>
                     <div class="col m1">
-                        <button class="btn-floating btn-large waves-effect waves-light light-blue" type="submit">
+                        <button id="search-btn" class="btn-floating btn-large waves-effect waves-light blue" type="submit">
                             <i class="large mdi-action-search"></i>
                         </button>
+                    </div>
+                    <div class="col m1">
+                        <div id="search-spin" class="preloader-wrapper active">
+                            <div class="spinner-layer spinner-blue-only">
+                                <div class="circle-clipper left">
+                                    <div class="circle"></div>
+                                </div><div class="gap-patch">
+                                <div class="circle"></div>
+                            </div><div class="circle-clipper right">
+                                <div class="circle"></div>
+                            </div>
+                            </div>
+                        </div>
                     </div>
                 </form>
             </div>
@@ -50,7 +63,7 @@
                                     }
                                     </pre>
                                 </div>
-                                <p><a href="https://github.com/@entry.repo/blob/master/@entry.path#L@entry.line" class="light-blue-text">See code</a></p>
+                                <p><a href="https://github.com/@entry.repo/blob/master/@entry.path#L@entry.line" class="blue-text">See code</a></p>
                             </div>
                             <div class="card-reveal">
                                 <span class="card-title grey-text text-darken-4">Code snippet <i class="mdi-navigation-close right"></i></span>
@@ -61,7 +74,7 @@
                 }
               }
               case Some(SearchResultError(error)) => {
-                  <h3>@error</h3>
+                  <p>@error</p>
               }
               case None => {}
             }
