@@ -7,20 +7,17 @@
         <div class="section">
 
             <!--   Icon Section   -->
-            <div class="row">
+            <div class="row search-box">
                 <form method="GET">
-                    <div class="input-field col m11">
+                    <div class="input-field col m12">
                         <i class="mdi-hardware-keyboard-arrow-right prefix"></i>
                         <label for="code-paste1">Paste your code here</label>
                         <textarea rows="8" id="code-paste1" class="materialize-textarea" name="q">@query.getOrElse("")</textarea>
                     </div>
-                    <div class="col m1">
-                        <button id="search-btn" class="btn-floating btn-large waves-effect waves-light blue" type="submit">
+                        <button id="search-btn" class="search-float btn-floating btn-large waves-effect waves-light blue" type="submit">
                             <i class="large mdi-action-search"></i>
                         </button>
-                    </div>
-                    <div class="col m1">
-                        <div id="search-spin" class="preloader-wrapper active">
+                        <div id="search-spin" class="search-float preloader-wrapper active">
                             <div class="spinner-layer spinner-blue-only">
                                 <div class="circle-clipper left">
                                     <div class="circle"></div>
@@ -31,7 +28,6 @@
                             </div>
                             </div>
                         </div>
-                    </div>
                 </form>
             </div>
             <div class="row">
