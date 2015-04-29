@@ -1,4 +1,4 @@
-@(query: Option[String], results: Option[services.SearchResults])
+@(query: Option[String], results: Seq[(String, services.SearchResultEntry)])
 
 @main("Search Code") {
 
@@ -22,7 +22,7 @@
             </div>
             <div class="row">
 
-            @for(entry <- results.map(_.entries).getOrElse(Nil)) {
+            @for((snippet, entry) <- results) {
                 <div class="col s12">
                     <div class="card">
                         <div class="card-content">
@@ -31,18 +31,7 @@
                           <span class="card-title activator grey-text text-darken-4">@entry.path<i class="mdi-navigation-more-vert right"></i></span>
                           &nbsp;(@entry.line)
                             <div class="card-image waves-effect waves-block waves-light">
-                                <pre class="brush: scala; first-line: 10; toolbar: false;">
-                                @{ """
-                                  |// In the future this will contain a preview of the matching file at the relevant location
-                                  |def placeholder(arg: SomeType) = {
-                                  |  val x = doSomethingFancy(arg.foo())
-                                  |  val y = x.bar()
-                                  |  // Well, this is just dummy code
-                                  |  x + " " + y
-                                  |}
-                                  """.stripMargin
-                                }
-                                </pre>
+                                <pre class="brush: java; first-line: @entry.line; toolbar: false;">@snippet</pre>
                             </div>
                             <p><a href="https://github.com/@entry.repo/blob/master/@entry.path#L@entry.line" class="light-blue-text">See code</a></p>
                         </div>
