@@ -7,6 +7,8 @@ version := "1.0-SNAPSHOT"
 
 scalaVersion := "2.10.4"
 
+scalacOptions ++= Seq("-feature", "-deprecation", "-unchecked")
+
 libraryDependencies ++= Seq(
   jdbc,
   anorm,
