@@ -1,9 +1,6 @@
-@(query: Option[String], result: Option[devsearch.lookup.SearchResult], snippets: Map[devsearch.lookup.SearchResultEntry, String])
+@(search: controllers.Application.SearchQuery, result: Option[devsearch.lookup.SearchResult], snippets: Map[devsearch.lookup.SearchResultEntry, String], langs : Set[String]))
 @import devsearch.lookup._
-
-@langs = @{
-    Seq("javascript", "go", "scala", "java", "python")
-}
+@import helper.form
 
 @main("Search Code") {
 
@@ -12,39 +9,39 @@
 
                 <!--   Icon Section   -->
             <div class="row search-box">
-                <form method="GET">
-                    <div class="input-field col m12">
-                        <i class="mdi-hardware-keyboard-arrow-right prefix"></i>
-                        <label for="code-paste1">Paste your code here</label>
-                        <textarea rows="8" id="code-paste1" class="materialize-textarea" name="q">@query.getOrElse("")</textarea>
-                    </div>
-                    <button id="search-btn" class="search-float btn-floating btn-large waves-effect waves-light blue" type="submit">
-                        <i class="large mdi-action-search"></i>
-                    </button>
-                    <div id="search-spin" class="search-float preloader-wrapper active">
-                        <div class="spinner-layer spinner-blue-only">
-                            <div class="circle-clipper left">
+                    @form(routes.Application.search()) {
+                        <div class="input-field col m12">
+                            <i class="mdi-hardware-keyboard-arrow-right prefix"></i>
+                            <label for="code-paste1">Paste your code here</label>
+                            <textarea rows="8" id="code-paste1" class="materialize-textarea" name="query">@search.query.getOrElse("")</textarea>
+                        </div>
+                        <button id="search-btn" class="search-float btn-floating btn-large waves-effect waves-light blue" type="submit">
+                            <i class="large mdi-action-search"></i>
+                        </button>
+                        <div id="search-spin" class="search-float preloader-wrapper active">
+                            <div class="spinner-layer spinner-blue-only">
+                                <div class="circle-clipper left">
+                                    <div class="circle"></div>
+                                </div><div class="gap-patch">
                                 <div class="circle"></div>
-                            </div><div class="gap-patch">
-                            <div class="circle"></div>
-                        </div><div class="circle-clipper right">
-                            <div class="circle"></div>
-                        </div>
-                        </div>
-                    </div>
-                    <div class="col m12">
-
-                        @langs.map { lang =>
-                            <div class="language-filter">
-                                <input type="checkbox" id="@lang-filter" name="@lang"/>
-                                <label for="@lang-filter">@lang.capitalize</label>
+                            </div><div class="circle-clipper right">
+                                <div class="circle"></div>
                             </div>
-                        }
-                        <div id="toggle-filters">
-                            <a href="#!">Advanced search</a>
+                            </div>
                         </div>
-                    </div>
-                </form>
+                        <div class="col m12">
+
+                            @langs.map { lang =>
+                                <div class="language-filter">
+                                    <input @if(search.langSelectors.contains(lang)){ checked="checked" } type="checkbox" id="@lang-filter" name="@lang" />
+                                    <label for="@lang-filter">@lang.capitalize</label>
+                                </div>
+                            }
+                            <div id="toggle-filters">
+                                <a href="#!">Advanced search</a>
+                            </div>
+                        </div>
+                    }
             </div>
 
             <div class="row">

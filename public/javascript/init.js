@@ -9,23 +9,32 @@ $(function(){
 
     // Spinning wheel on search button
     $('#search-btn').click(function(){
-        $('#search-btn').hide()
+        $('#search-btn').hide();
         $('#search-spin').show()
-    })
+    });
 
-    // Toggle search
-    $('#toggle-filters').children("a").click(function()
-    {
+    function showFilters(){
+        var toggle = $('#toggle-filters').children("a");
+        var filters=  $(".language-filter");
         if($(".language-filter:first").is(":hidden")) {
-            $(".language-filter").show("slow")
-            $('#toggle-filters').children("a").text("Hide")
+            filters.show("slow");
+            toggle.text("Clear");
         } else {
-            $(".language-filter").hide("slow")
-            $('#toggle-filters').children("a").text("Advanced search")
+            filters.hide("slow");
+            filters.children("input").prop( "checked", false );
+            toggle.text("Advanced search");
         }
 
         return false;
-    });
+    }
+
+    // Show the filters
+    $('#toggle-filters').children("a").click(showFilters);
+
+    // filters should be visible if a chechbox is selected on page load
+    if($(".language-filter").children("input:checked").length > 0){
+        showFilters();
+    }
 
 }); // end of document ready
 

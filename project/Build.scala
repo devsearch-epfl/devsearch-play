@@ -1,5 +1,6 @@
 import play.PlayScala
 import sbt._
+import Keys._
 
 
 object MyBuild extends Build {
@@ -7,7 +8,13 @@ object MyBuild extends Build {
   lazy val root = Project("root", file("."))
     .dependsOn(astProject)
     .dependsOn(lookupProject)
+    .dependsOn(macroSub)
     .enablePlugins(PlayScala)
+
+  lazy val macroSub = Project("macro", file("macro")).settings(
+    libraryDependencies <+= scalaVersion("org.scala-lang" % "scala-compiler" % _)
+    ).dependsOn(astProject)
+
 
   lazy val astProject = RootProject(uri("git://github.com/devsearch-epfl/devsearch-ast.git#" + astProjectCommit))
   // uncoment the below for using local changes

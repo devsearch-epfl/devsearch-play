@@ -1,4 +1,5 @@
 @(message: String)
+@import helper.form
 
 @main("Welcome to DevSearch") {
     <div class="section no-pad-bot" id="index-banner">
@@ -21,29 +22,29 @@
             <div class="row">
                 <div class="col s8 offset-s2">
                     <div class="row search-box">
-                        <form action="@routes.Application.search(None)" method="GET">
-                            <div class="input-field col m12">
-                                <i class="mdi-hardware-keyboard-arrow-right prefix"></i>
-                                <label for="code-paste1">Paste your code here</label>
-                                <textarea rows="8" id="code-paste1" class="materialize-textarea" name="q"></textarea>
-                            </div>
+                    @form(routes.Application.search()) {
+                        <div class="input-field col m12">
+                            <i class="mdi-hardware-keyboard-arrow-right prefix"></i>
+                            <label for="code-paste1">Paste your code here</label>
+                            <textarea rows="8" id="code-paste1" class="materialize-textarea" name="query"></textarea>
+                        </div>
 
-                            <button id="search-btn" class="search-float btn-floating btn-large waves-effect waves-light blue" type="submit">
-                                <i class="large mdi-action-search"></i>
-                            </button>
+                        <button id="search-btn" class="search-float btn-floating btn-large waves-effect waves-light blue" type="submit">
+                            <i class="large mdi-action-search"></i>
+                        </button>
 
-                            <div id="search-spin" class="search-float preloader-wrapper active">
-                                <div class="spinner-layer spinner-blue-only">
-                                    <div class="circle-clipper left">
-                                        <div class="circle"></div>
-                                    </div><div class="gap-patch">
+                        <div id="search-spin" class="search-float preloader-wrapper active">
+                            <div class="spinner-layer spinner-blue-only">
+                                <div class="circle-clipper left">
                                     <div class="circle"></div>
-                                </div><div class="circle-clipper right">
-                                    <div class="circle"></div>
-                                </div>
-                                </div>
+                                </div><div class="gap-patch">
+                                <div class="circle"></div>
+                            </div><div class="circle-clipper right">
+                                <div class="circle"></div>
                             </div>
-                        </form>
+                            </div>
+                        </div>
+                    }
                     </div>
                 </div>
             </div>
