@@ -16,6 +16,7 @@ import scala.concurrent.Future
 import scala.concurrent.duration._
 import scala.language.postfixOps
 import scala.language.experimental.macros
+import scala.util.{Try, Failure, Success}
 
 
 object Application extends Controller {
@@ -67,9 +68,9 @@ object Application extends Controller {
         val futureSnippets = entries.map(e => SnippetFetcher.getSnippetCode(e, 10).map(snip => (e, snip)))
 
         /* Keep only the successful ones */
-        val successfulSnippets = futureSnippets.map(f => Future.sequence(List(f))).map(_.recover { case e: Throwable => Nil })
+        val successfulSnippets = futureSnippets.map(f => f.map[Try[(SearchResultEntry, String)]](Success(_)).recover{case x : Throwable => Failure(x)})
 
-        Future.sequence(successfulSnippets).map(list => list.flatten.toMap)
+        Future.sequence(successfulSnippets).map(list => list.collect { case Success(x) => x } toMap )
       case _ => Future.successful(Map.empty)
     }
 
