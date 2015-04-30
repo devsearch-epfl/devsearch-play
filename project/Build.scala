@@ -1,19 +1,29 @@
 import play.PlayScala
 import sbt._
+import Keys._
 
 
 object MyBuild extends Build {
 
-  lazy val root = Project("root", file(".")).dependsOn(astParser).enablePlugins(PlayScala)
-  lazy val astParser = RootProject(uri("git://github.com/devsearch-epfl/devsearch-ast.git#"+astCommit))
-  //lazy val astParser = RootProject(file("../devsearch-ast"))
-  lazy val astCommit = "f2940793f16c7f006d93c1d1dcf8a908ed21c65c"
+  lazy val root = Project("root", file("."))
+    .dependsOn(astProject)
+    .dependsOn(lookupProject)
+    .dependsOn(macroSub)
+    .enablePlugins(PlayScala)
 
-  /*
-  object Github {
-    def project(repo: String) = RootProject(uri(s"${repo}"))
-    lazy val astParser = project("git://github.com/devsearch-epfl/devsearch-ast.git")
-  }
-  */
+  lazy val macroSub = Project("macro", file("macro")).settings(
+    libraryDependencies <+= scalaVersion("org.scala-lang" % "scala-compiler" % _)
+    ).dependsOn(astProject)
+
+
+  lazy val astProject = RootProject(uri("git://github.com/devsearch-epfl/devsearch-ast.git#" + astProjectCommit))
+  // uncoment the below for using local changes
+  //lazy val astProject = RootProject(file("../devsearch-ast"))
+  lazy val astProjectCommit = "f2940793f16c7f006d93c1d1dcf8a908ed21c65c"
+
+  lazy val lookupProject = RootProject(uri("git://github.com/devsearch-epfl/devsearch-lookup.git#" + lookupProjectCommit))
+  // uncoment the below for using local changes
+  //lazy val lookupProject = RootProject(file("../devsearch-lookup"))
+  lazy val lookupProjectCommit = "23a40ce528f70b8078131ea302ee44a3b3b69067"
 
 }

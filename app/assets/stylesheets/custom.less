@@ -6,7 +6,7 @@ textarea#code-paste {
 }
 
 code {
-  font: 12px Monaco,"Courier New","DejaVu Sans Mono","Bitstream Vera Sans Mono",monospace;
+  font: 12px Monaco, "Courier New", "DejaVu Sans Mono", "Bitstream Vera Sans Mono", monospace;
   color: #52595d;
   -webkit-border-radius: 3px;
   -moz-border-radius: 3px;
@@ -20,3 +20,57 @@ code {
   display: inline-block;
   margin: 0px;
 }
+
+body {
+  display: flex;
+  min-height: 100vh;
+  flex-direction: column;
+}
+
+main {
+  flex: 1 0 auto;
+}
+
+#search-spin {
+  display: none;
+}
+
+/* Text area underline color */
+textarea:focus.materialize-textarea {
+  border-bottom: 1px solid #2196F3;
+  box-shadow: 0 1px 0 0 #2196F3;
+}
+
+/* Text-area prefix color */
+.input-field .prefix.active {
+  color: #2196F3;
+}
+
+.search-box {
+  position: relative;
+}
+
+.search-box .search-float {
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+
+[type="checkbox"]:checked+label:before {
+  border-right: 2px solid #2196F3;
+  border-bottom: 2px solid #2196F3;
+}
+
+.language-filter {
+  float: left;
+  margin-left: 20px;
+  display: none;
+}
+
+#toggle-filters {
+  float: left;
+  height: 25px;
+  margin-left: 20px;
+}
+
+

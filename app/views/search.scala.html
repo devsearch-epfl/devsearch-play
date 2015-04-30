@@ -1,54 +1,81 @@
-@(query: Option[String], results: Seq[(String, services.SearchResultEntry)])
+@(search: controllers.Application.SearchQuery, result: Option[devsearch.lookup.SearchResult], snippets: Map[devsearch.lookup.SearchResultEntry, String], langs : Set[String]))
+@import devsearch.lookup._
+@import helper.form
 
 @main("Search Code") {
 
     <div class="container">
         <div class="section">
 
-            <!--   Icon Section   -->
-            <div class="row">
-                <form method="GET">
-                    <div class="input-field col m11">
-                        <i class="mdi-hardware-keyboard-arrow-right prefix"></i>
-                        <label for="code-paste1">Paste your code here</label>
-                        <textarea rows="8" id="code-paste1" class="materialize-textarea" name="q">@query.getOrElse("")</textarea>
-                    </div>
-                    <div class="col m1">
-                        <button class="btn-floating btn-large waves-effect waves-light light-blue" type="submit">
+                <!--   Icon Section   -->
+            <div class="row search-box">
+                    @form(routes.Application.search()) {
+                        <div class="input-field col m12">
+                            <i class="mdi-hardware-keyboard-arrow-right prefix"></i>
+                            <label for="code-paste1">Paste your code here</label>
+                            <textarea rows="8" id="code-paste1" class="materialize-textarea" name="query">@search.query.getOrElse("")</textarea>
+                        </div>
+                        <button id="search-btn" class="search-float btn-floating btn-large waves-effect waves-light blue" type="submit">
                             <i class="large mdi-action-search"></i>
                         </button>
-                    </div>
-                </form>
+                        <div id="search-spin" class="search-float preloader-wrapper active">
+                            <div class="spinner-layer spinner-blue-only">
+                                <div class="circle-clipper left">
+                                    <div class="circle"></div>
+                                </div><div class="gap-patch">
+                                <div class="circle"></div>
+                            </div><div class="circle-clipper right">
+                                <div class="circle"></div>
+                            </div>
+                            </div>
+                        </div>
+                        <div class="col m12">
+
+                            @langs.map { lang =>
+                                <div class="language-filter">
+                                    <input @if(search.langSelectors.contains(lang)){ checked="checked" } type="checkbox" id="@lang-filter" name="@lang" />
+                                    <label for="@lang-filter">@lang.capitalize</label>
+                                </div>
+                            }
+                            <div id="toggle-filters">
+                                <a href="#!">Advanced search</a>
+                            </div>
+                        </div>
+                    }
             </div>
+
             <div class="row">
 
-            @for((snippet, entry) <- results) {
-                <div class="col s12">
-                    <div class="card">
-                        <div class="card-content">
-                          <!-- todo: make this formatting better -->
-                          @entry.repo&nbsp;
-                          <span class="card-title activator grey-text text-darken-4">@entry.path<i class="mdi-navigation-more-vert right"></i></span>
-                          &nbsp;(@entry.line)
-                            <div class="card-image waves-effect waves-block waves-light">
-                                <pre class="brush: java; first-line: @entry.line; toolbar: false;">@snippet</pre>
+            @result match {
+                case Some(SearchResultSuccess(Seq())) => {
+                    <h3>No results found.</h3>
+                }
+                case Some(SearchResultSuccess(entries)) => {
+                    @for(entry <- entries) {
+                        <div class="col s12">
+                            <div class="card">
+                                <div class="card-content">
+                                        <!-- todo: make this formatting better -->
+                                    @entry.repo&nbsp;
+                                    <span class="card-title activator grey-text text-darken-4">@entry.path <i class="mdi-navigation-more-vert right"></i></span>
+                                        &nbsp;(@entry.line)
+                                    <div class="card-image waves-effect waves-block waves-light">
+                                        <pre class="brush: scala; first-line: 10; toolbar: false;">@snippets.getOrElse(entry, "Could not fetch code preview")</pre>
+                                    </div>
+                                </div>
                             </div>
-                            <p><a href="https://github.com/@entry.repo/blob/master/@entry.path#L@entry.line" class="light-blue-text">See code</a></p>
                         </div>
-                        <div class="card-reveal">
-                            <span class="card-title grey-text text-darken-4">Code snippet <i class="mdi-navigation-close right"></i></span>
-                            <p>Here is some more information about this code snippet, like language, date, developper etc...</p>
-                        </div>
-                    </div>
-                </div>
+                    }
+                }
+                case Some(SearchResultError(error)) => {
+                    <h3>Something went wrong. Sorry.</h3>
+                    <p>@error</p>
+                }
+                case None => {
+                }
             }
 
             </div>
-
-        </div>
-        <br><br>
-
-        <div class="section">
 
         </div>
     </div>
