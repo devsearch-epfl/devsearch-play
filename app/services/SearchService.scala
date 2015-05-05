@@ -18,7 +18,7 @@ import scala.util._
 
 object SearchService {
 
-  val initialContacts = Set(Akka.system.actorSelection("akka.tcp://lookupCluster@master1:2555/user/receptionist"))
+  val initialContacts = Set(Akka.system.actorSelection("akka.tcp://lookupCluster@127.0.0.1:2555/user/receptionist"))
   val clusterClient = Akka.system.actorOf(ClusterClient.props(initialContacts), "clusterClient")
 
   def get(query: String, maxDuration: FiniteDuration): Future[SearchResult] = {
