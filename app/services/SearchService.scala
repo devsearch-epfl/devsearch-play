@@ -22,27 +22,25 @@ object SearchService {
   val clusterClient = Akka.system.actorOf(ClusterClient.props(initialContacts), "clusterClient")
 
   def get(query: String, maxDuration: FiniteDuration): Future[SearchResult] = {
-    val queryAst = List(JavaParser, GoParser, QueryParser).map(p => Try(p.parse(new ContentsSource("query", query)))) collectFirst { case Success(ast) => ast }
-
     Logger.info("--- new query ---")
     Logger.info("Input: " + query)
 
     implicit val timeout = new Timeout(maxDuration)
 
-    queryAst.map { ast =>
-
-      Logger.info("AST: " + ast)
-
-      val features = Features(
-        CodeFileData(CodeFileLocation("dummy username", "dummy repo name", "dummy file name"), ast)
-      ).map((f: Feature) => f.key).toList
+    Try {
+      val contentsSource = new ContentsSource("dummy", query)
+      // TODO: Languages.Scala is the query language. We guess that it is Scala for now
+      val codeFile = CodeFile(Languages.Scala, CodeFileLocation("dummy", "dummy", "dummy"), contentsSource)
+      val features = FeatureRecognizer(codeFile).map(_.key).toList
 
       Logger.info("Features: " + features.size)
       features.zipWithIndex.foreach { case (feature, idx) => Logger.info(s" ${idx + 1}. $feature") }
 
-      val results = (clusterClient ? ClusterClient.Send("/user/lookup", SearchRequest(features), localAffinity = true) collect { case s: SearchResult => s }).recover{
-        case e: AskTimeoutException => SearchResultError("Timeout.")
-      }
+      val results = (clusterClient ? ClusterClient.Send("/user/lookup", SearchRequest(features), localAffinity = true))
+        .collect { case s: SearchResult => s }
+        .recover {
+          case e: AskTimeoutException => SearchResultError("Timeout.")
+        }
 
       results.onSuccess {
         case SearchResultError(message) => Logger.error(s"error: $message")
@@ -53,7 +51,6 @@ object SearchService {
       Logger.error("Unable to parse")
       Future.successful(SearchResultError("unable to parse"))
     }
-
   }
 
 }

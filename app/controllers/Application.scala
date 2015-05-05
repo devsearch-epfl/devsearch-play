@@ -1,13 +1,10 @@
 package controllers
 
-import devsearch.macros.Metadata
 import devsearch.lookup._
-import play.api.Logger
-import play.api.Play.current
+import devsearch.parsers.Languages
 import play.api.data.{FormError, Form}
 import play.api.data.Forms._
 import play.api.data.format.Formatter
-import play.api.libs.concurrent.Akka
 import play.api.mvc._
 import services.{SnippetFetcher, SearchService}
 
@@ -25,15 +22,11 @@ object Application extends Controller {
     Ok(views.html.index("Your new application is ready."))
   }
 
-
-  /* All the languages we can parse */
-  val languages = devsearch.macros.Metadata.supportedLanguages
-
   /* Extract language selectors from the form */
   val languageFormatter = new Formatter[Set[String]] {
     override def bind(key: String, data: Map[String, String]): Either[Seq[FormError], Set[String]] = {
       val res = if(key != "languages") Set.empty[String] else data.filter{
-        case (k, v) =>  languages.contains(k) && v == "on"
+        case (k, v) => Languages.isLanguageSupported(k) && v == "on"
       }.keySet
 
       Right(res)
@@ -74,6 +67,6 @@ object Application extends Controller {
       case _ => Future.successful(Map.empty)
     }
 
-    for (results <- futureResults; snips <- snippets) yield Ok(views.html.search(search, results, snips, languages))
+    for (results <- futureResults; snips <- snippets) yield Ok(views.html.search(search, results, snips, Languages.supportedLanguages()))
   }
 }

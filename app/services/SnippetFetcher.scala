@@ -19,9 +19,10 @@ object SnippetFetcher {
 
   def getSnippetCode(entry: SearchResultEntry, size: Int): Future[String] = {
 
+    val encodedUser = encodeGithubPath(entry.user)
     val encodedRepo = encodeGithubPath(entry.repo)
     val encodedPath = encodeGithubPath(entry.path)
-    val url = s"https://raw.githubusercontent.com/$encodedRepo/master/$encodedPath"
+    val url = s"https://raw.githubusercontent.com/$encodedUser/$encodedRepo/master/$encodedPath"
 
     WS.url(url).get().map { result => result.body.lines.drop(entry.line - 1).take(size).mkString("\n") }
   }
