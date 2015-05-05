@@ -22,19 +22,25 @@ object SearchService {
   val clusterClient = Akka.system.actorOf(ClusterClient.props(initialContacts), "clusterClient")
 
   def get(query: String, maxDuration: FiniteDuration): Future[SearchResult] = {
-    val queryAst = List(JavaParser, GoParser, QueryParser).map(p => Try(p.parse(new ContentsSource("query", query)))) collectFirst { case Success(ast) => ast }
+    val queryAstOpt = List(JavaParser, GoParser, QueryParser)
+      .map(p => Try(p.parse(new ContentsSource("query", query))))
+      .collectFirst { case Success(ast) => ast }
 
     Logger.info("--- new query ---")
     Logger.info("Input: " + query)
 
     implicit val timeout = new Timeout(maxDuration)
 
-    queryAst.map { ast =>
+    queryAstOpt.map { queryAst =>
 
-      Logger.info("AST: " + ast)
+      Logger.info("AST: " + queryAst)
 
-      val features = Features(
-        CodeFileData(CodeFileLocation("dummy username", "dummy repo name", "dummy file name"), ast)
+      val features = FeatureRecognizer(
+        new CodeFile {
+          val language = "dummy language"
+          val location = CodeFileLocation("dummy username", "dummy repo name", "dummy file path")
+          val ast = queryAst
+        }
       ).map((f: Feature) => f.key).toList
 
       Logger.info("Features: " + features.size)
