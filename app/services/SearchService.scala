@@ -13,6 +13,7 @@ import play.libs.Akka
 import scala.concurrent._
 import scala.concurrent.duration.FiniteDuration
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.util._
 
 
 object SearchService {
@@ -26,19 +27,20 @@ object SearchService {
 
     implicit val timeout = new Timeout(maxDuration)
 
-    scala.util.Try {
-      val unique_output_filename = "query_unique_output_file.txt"
-      val contentsSource = new ContentsSource(unique_output_filename, query)
+    Try {
+      val contentsSource = new ContentsSource("dummy", query)
       // Name of the language is used to guess the parser
-      val codeFile = CodeFile(Languages.Scala, CodeFileLocation("dummy", "dummy", "dummy"), contentsSource)
+      val codeFile = CodeFile("Scala", CodeFileLocation("dummy", "dummy", "dummy"), contentsSource)
       val features = FeatureRecognizer(codeFile).map(_.key).toList
 
       Logger.info("Features: " + features.size)
       features.zipWithIndex.foreach { case (feature, idx) => Logger.info(s" ${idx + 1}. $feature") }
 
-      val results = (clusterClient ? ClusterClient.Send("/user/lookup", SearchRequest(features), localAffinity = true) collect { case s: SearchResult => s }).recover{
-        case e: AskTimeoutException => SearchResultError("Timeout.")
-      }
+      val results = (clusterClient ? ClusterClient.Send("/user/lookup", SearchRequest(features), localAffinity = true))
+        .collect { case s: SearchResult => s }
+        .recover {
+          case e: AskTimeoutException => SearchResultError("Timeout.")
+        }
 
       results.onSuccess {
         case SearchResultError(message) => Logger.error(s"error: $message")
