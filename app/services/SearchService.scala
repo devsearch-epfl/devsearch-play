@@ -22,26 +22,17 @@ object SearchService {
   val clusterClient = Akka.system.actorOf(ClusterClient.props(initialContacts), "clusterClient")
 
   def get(query: String, maxDuration: FiniteDuration): Future[SearchResult] = {
-    val queryAstOpt = List(JavaParser, GoParser, QueryParser)
-      .map(p => Try(p.parse(new ContentsSource("query", query))))
-      .collectFirst { case Success(ast) => ast }
-
     Logger.info("--- new query ---")
     Logger.info("Input: " + query)
 
     implicit val timeout = new Timeout(maxDuration)
 
-    queryAstOpt.map { queryAst =>
-
-      Logger.info("AST: " + queryAst)
-
-      val features = FeatureRecognizer(
-        new CodeFile {
-          val language = "dummy language"
-          val location = CodeFileLocation("dummy username", "dummy repo name", "dummy file path")
-          val ast = queryAst
-        }
-      ).map((f: Feature) => f.key).toList
+    scala.util.Try {
+      val unique_output_filename = "query_unique_output_file.txt"
+      val contentsSource = new ContentsSource(unique_output_filename, query)
+      // Name of the language is used to guess the parser
+      val codeFile = CodeFile("Scala", CodeFileLocation("dummy", "dummy", "dummy"), contentsSource)
+      val features = FeatureRecognizer(codeFile).map(_.key).toList
 
       Logger.info("Features: " + features.size)
       features.zipWithIndex.foreach { case (feature, idx) => Logger.info(s" ${idx + 1}. $feature") }
@@ -59,7 +50,6 @@ object SearchService {
       Logger.error("Unable to parse")
       Future.successful(SearchResultError("unable to parse"))
     }
-
   }
 
 }
