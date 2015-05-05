@@ -13,7 +13,6 @@ import play.libs.Akka
 import scala.concurrent._
 import scala.concurrent.duration.FiniteDuration
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.util._
 
 
 object SearchService {
@@ -31,7 +30,7 @@ object SearchService {
       val unique_output_filename = "query_unique_output_file.txt"
       val contentsSource = new ContentsSource(unique_output_filename, query)
       // Name of the language is used to guess the parser
-      val codeFile = CodeFile("Scala", CodeFileLocation("dummy", "dummy", "dummy"), contentsSource)
+      val codeFile = CodeFile(Languages.Scala, CodeFileLocation("dummy", "dummy", "dummy"), contentsSource)
       val features = FeatureRecognizer(codeFile).map(_.key).toList
 
       Logger.info("Features: " + features.size)
