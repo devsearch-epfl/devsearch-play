@@ -29,7 +29,7 @@ object SearchService {
 
     Try {
       val contentsSource = new ContentsSource("dummy", query)
-      // Name of the language is used to guess the parser
+      // TODO: Languages.Scala is the query language. We guess that it is Scala for now
       val codeFile = CodeFile(Languages.Scala, CodeFileLocation("dummy", "dummy", "dummy"), contentsSource)
       val features = FeatureRecognizer(codeFile).map(_.key).toList
 
