@@ -27,30 +27,28 @@ object SearchService {
 
     implicit val timeout = new Timeout(maxDuration)
 
-    Try {
-      val contentsSource = new ContentsSource("dummy", query)
-      // TODO: Languages.Scala is the query language. We guess that it is Scala for now
-      val codeFile = CodeFile(Languages.Scala, CodeFileLocation("dummy", "dummy", "dummy"), contentsSource)
-      val features = FeatureRecognizer(codeFile).map(_.key).toList
-
-      Logger.info("Features: " + features.size)
-      features.zipWithIndex.foreach { case (feature, idx) => Logger.info(s" ${idx + 1}. $feature") }
-
-      val results = (clusterClient ? ClusterClient.Send("/user/lookup", SearchRequest(features), localAffinity = true))
-        .collect { case s: SearchResult => s }
-        .recover {
-          case e: AskTimeoutException => SearchResultError("Timeout.")
-        }
-
-      results.onSuccess {
-        case SearchResultError(message) => Logger.error(s"error: $message")
-        case SearchResultSuccess(entries) => Logger.info(s"received: ${entries.length} entries")
-      }
-      results
-    }.getOrElse {
-      Logger.error("Unable to parse")
-      Future.successful(SearchResultError("unable to parse"))
+    val featureKeys = QueryRecognizer(query) match {
+      case Some(codeFile) =>
+        // TODO(christian): You can access the language with the commented line below
+        // val detectedLanguage = codeFile.language
+        FeatureRecognizer(codeFile).map(_.key).toList
+      case _ => List[String]()
     }
+
+    Logger.info("Features: " + featureKeys.size)
+    featureKeys.zipWithIndex.foreach { case (feature, idx) => Logger.info(s" ${idx + 1}. $feature") }
+
+    val results = (clusterClient ? ClusterClient.Send("/user/lookup", SearchRequest(featureKeys), localAffinity = true))
+      .collect { case s: SearchResult => s }
+      .recover {
+        case e: AskTimeoutException => SearchResultError("Timeout.")
+      }
+
+    results.onSuccess {
+      case SearchResultError(message) => Logger.error(s"error: $message")
+      case SearchResultSuccess(entries) => Logger.info(s"received: ${entries.length} entries")
+    }
+    results
   }
 
 }

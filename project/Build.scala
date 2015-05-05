@@ -19,7 +19,7 @@ object MyBuild extends Build {
   lazy val astProject = RootProject(uri("git://github.com/devsearch-epfl/devsearch-ast.git#" + astProjectCommit))
   // uncoment the below for using local changes
   //lazy val astProject = RootProject(file("../devsearch-ast"))
-  lazy val astProjectCommit = "6d12a15f519fbaa007b54731a6a7b9702e3399df"
+  lazy val astProjectCommit = "bec55a248de3ecd79dc543e9a865a92075a861b5"
 
   lazy val lookupProject = RootProject(uri("git://github.com/devsearch-epfl/devsearch-lookup.git#" + lookupProjectCommit))
   // uncoment the below for using local changes
