@@ -52,8 +52,8 @@ object Application extends Controller {
     val (detectedLanguage: Option[String], detectedFeatures : List[String], futureResults: Future[Option[SearchResult]]) = search.query match {
       case Some(query) =>
         val temp = SearchService.get(query, timeout)
-        (temp._1,temp._2, temp._3.map(Some(_)))
-      case None => (None, None,Future.successful(None))
+        (temp._1, temp._2.map(Some(_)), temp._3.map(Some(_)))
+      case None => (None, None, Future.successful(None))
     }
 
     val snippets: Future[Map[SearchResultEntry, String]] = futureResults.flatMap {

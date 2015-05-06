@@ -21,7 +21,7 @@ object SearchService {
   val initialContacts = Set(Akka.system.actorSelection("akka.tcp://lookupCluster@127.0.0.1:2555/user/receptionist"))
   val clusterClient = Akka.system.actorOf(ClusterClient.props(initialContacts), "clusterClient")
 
-  def get(query: String, maxDuration: FiniteDuration): (Option[String],List[String], Future[SearchResult]) = {
+  def get(query: String, maxDuration: FiniteDuration): (Option[String], List[String], Future[SearchResult]) = {
     Logger.info("--- new query ---")
     Logger.info("Input: " + query)
 
@@ -47,7 +47,6 @@ object SearchService {
       case SearchResultError(message) => Logger.error(s"error: $message")
       case SearchResultSuccess(entries) => Logger.info(s"received: ${entries.length} entries")
     }
-    (detectedLanguage,featureList, results)
+    (detectedLanguage, featureList, results)
   }
-
 }
