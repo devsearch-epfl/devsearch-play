@@ -29,8 +29,8 @@ object SearchService {
 
     val featureKeys = QueryRecognizer(query) match {
       case Some(codeFile) =>
-        // TODO(christian): You can access the language with the commented line below
-        // val detectedLanguage = codeFile.language
+        val detectedLanguage = codeFile.language
+        Logger.info("Detected language for query: " + detectedLanguage)
         FeatureRecognizer(codeFile).map(_.key).toList
       case _ => List[String]()
     }
