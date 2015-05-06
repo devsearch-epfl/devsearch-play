@@ -21,36 +21,33 @@ object SearchService {
   val initialContacts = Set(Akka.system.actorSelection("akka.tcp://lookupCluster@127.0.0.1:2555/user/receptionist"))
   val clusterClient = Akka.system.actorOf(ClusterClient.props(initialContacts), "clusterClient")
 
-  def get(query: String, maxDuration: FiniteDuration): Future[SearchResult] = {
+  def get(query: String, maxDuration: FiniteDuration): (Option[String],List[String], Future[SearchResult]) = {
     Logger.info("--- new query ---")
     Logger.info("Input: " + query)
 
     implicit val timeout = new Timeout(maxDuration)
 
-    Try {
-      val contentsSource = new ContentsSource("dummy", query)
-      // TODO: Languages.Scala is the query language. We guess that it is Scala for now
-      val codeFile = CodeFile(Languages.Scala, CodeFileLocation("dummy", "dummy", "dummy"), contentsSource)
-      val features = FeatureRecognizer(codeFile).map(_.key).toList
-
-      Logger.info("Features: " + features.size)
-      features.zipWithIndex.foreach { case (feature, idx) => Logger.info(s" ${idx + 1}. $feature") }
-
-      val results = (clusterClient ? ClusterClient.Send("/user/lookup", SearchRequest(features), localAffinity = true))
-        .collect { case s: SearchResult => s }
-        .recover {
-          case e: AskTimeoutException => SearchResultError("Timeout.")
-        }
-
-      results.onSuccess {
-        case SearchResultError(message) => Logger.error(s"error: $message")
-        case SearchResultSuccess(entries) => Logger.info(s"received: ${entries.length} entries")
-      }
-      results
-    }.getOrElse {
-      Logger.error("Unable to parse")
-      Future.successful(SearchResultError("unable to parse"))
+    val (detectedLanguage, featureKeys) = QueryRecognizer(query) match {
+      case Some(codeFile) =>
+        Logger.info("Detected language for query: " + codeFile.language)
+        (Some(codeFile.language), FeatureRecognizer(codeFile).map(_.key).toList)
+      case _ => (None, List[String]())
     }
+    Logger.info("Features: " + featureKeys.size)
+    featureKeys.zipWithIndex.foreach { case (feature, idx) =>  Logger.info(s" ${idx + 1}. $feature") }
+    val featureList: List[String] = featureKeys.zipWithIndex.map( x => (s"Feature ${x._2 + 1}: ${x._1}") )
+
+    val results = (clusterClient ? ClusterClient.Send("/user/lookup", SearchRequest(featureKeys), localAffinity = true))
+      .collect { case s: SearchResult => s }
+      .recover {
+        case e: AskTimeoutException => SearchResultError("Timeout.")
+      }
+
+    results.onSuccess {
+      case SearchResultError(message) => Logger.error(s"error: $message")
+      case SearchResultSuccess(entries) => Logger.info(s"received: ${entries.length} entries")
+    }
+    (detectedLanguage,featureList, results)
   }
 
 }

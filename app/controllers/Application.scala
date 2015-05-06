@@ -49,9 +49,11 @@ object Application extends Controller {
     val search = searchForm.bindFromRequest.get
 
     val timeout = 10 seconds
-    val futureResults: Future[Option[SearchResult]] = search.query match {
-      case Some(query) => SearchService.get(query, timeout).map(Some(_))
-      case None => Future.successful(None)
+    val (detectedLanguage: Option[String], detectedFeatures : List[String], futureResults: Future[Option[SearchResult]]) = search.query match {
+      case Some(query) =>
+        val temp = SearchService.get(query, timeout)
+        (temp._1,temp._2, temp._3.map(Some(_)))
+      case None => (None, None,Future.successful(None))
     }
 
     val snippets: Future[Map[SearchResultEntry, String]] = futureResults.flatMap {
@@ -67,6 +69,6 @@ object Application extends Controller {
       case _ => Future.successful(Map.empty)
     }
 
-    for (results <- futureResults; snips <- snippets) yield Ok(views.html.search(search, results, snips, Languages.supportedLanguages()))
+    for (results <- futureResults; snips <- snippets) yield Ok(views.html.search(search, results, snips, Languages.supportedLanguages(), detectedLanguage, detectedFeatures))
   }
 }
