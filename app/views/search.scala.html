@@ -1,4 +1,4 @@
-@(search: controllers.Application.SearchQuery, result: Option[devsearch.lookup.SearchResult], snippets: Map[devsearch.lookup.SearchResultEntry, String], langs : Set[String])
+@(search: controllers.Application.SearchQuery, result: Option[devsearch.lookup.SearchResult], snippets: Map[devsearch.lookup.SearchResultEntry, String], langs : Set[String], detectedLanguage: Option[String], detectedFeatures: List[String])
 @import devsearch.lookup._
 @import helper.form
 
@@ -44,11 +44,33 @@
                     }
             </div>
 
+
+            <div class="row">
+
+                @detectedLanguage match {
+                case Some(s) => {
+                <h5> Language recognized in your query: @s</h5>
+                }
+                case None => {
+                <h5> Sorry, no language was recognized :( </h5>
+                }
+                }
+                <h6> Number of features detected: @detectedFeatures.length   </h6>
+                @detectedFeatures.map { feature =>
+                <h7> @feature</h7>
+                <br></br>
+                }
+
+            </div>
+
+        </div>
+
+
             <div class="row">
 
             @result match {
                 case Some(SearchResultSuccess(Seq())) => {
-                    <h3>No results found.</h3>
+                    <h3>No result found.</h3>
                 }
                 case Some(SearchResultSuccess(entries)) => {
                     @for(entry <- entries) {
