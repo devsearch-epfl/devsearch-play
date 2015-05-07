@@ -17,3 +17,5 @@ dist
 activator*
 typesafe-activator*
 /bin/
+
+.DS_Store
