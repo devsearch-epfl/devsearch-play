@@ -30,25 +30,6 @@
                         </div>
 
                         <div class="col m12">
-                            <div class="more-info">
-                                @detectedLanguage match {
-                                    case Some(s) => {
-                                        <label>Language detected: @s</label>
-                                    }
-                                    case None => {
-                                        <label> No language detected </label>
-                                    }
-                                }<br>
-                                <label>Number of features detected: @detectedFeatures.length</label>
-                            </div>
-
-                            <div id="toggle-more-info">
-                                <a href="#!">More info</a>
-                            </div>
-                        </div>
-
-
-                        <div class="col m12">
                             @langs.map { lang =>
                                 <div class="language-filter">
                                     <input @if(search.langSelectors.contains(lang)){ checked="checked" } type="checkbox" id="@lang-filter" name="@lang" />
@@ -60,22 +41,34 @@
                             </div>
                         </div>
 
+                        <div class="col m12">
+                            <div class="more-info">
+                                @detectedLanguage match {
+                                    case Some(s) => {
+                                        <label>Language detected: @s</label>
+                                    }
+                                    case None => {
+                                        <label>No language detected</label>
+                                    }
+                                }<br>
+                                <label><div class="toggle-features"> Number of <a href="#!">features detected:</a> @detectedFeatures.length</div></label>
+                            </div>
 
+                            <div id="toggle-more-info">
+                                <a href="#!">More info</a>
+                            </div>
+                        </div>
+
+                        <div class="col m6">
+                            <div class="show-feature">
+                            @detectedFeatures.map { feature =>
+                                <label> @feature</label><br>
+                            }
+                            </div>
+                        </div>
                     }
             </div>
-
-
-
-
-
-            <div class="row">
-                @detectedFeatures.map { feature =>
-                <h7> @feature</h7>
-                <br>
-                }
-
-            </div>
-
+        </div>
 
 
 
