@@ -4,6 +4,19 @@
 
 @main("Search Code") {
 
+
+    <!-- Modal Structure -->
+    <div id="features" class="modal">
+        <div class="modal-content">
+            <h4>Features foud</h4>
+            <ul class="collection">
+            @queryInfo.features.map { feature =>
+                <li class="collection-item">@feature</li>
+            }
+            </ul>
+        </div>
+    </div>
+
     <div class="container">
         <div class="section">
 
@@ -29,7 +42,7 @@
                     </div>
                 </div>
 
-                <div class="col m12">
+                <div class="col m6">
                     @langs.map { lang =>
                         <div class="language-filter">
                             <input @if(search.langSelectors.contains(lang)) {
@@ -41,32 +54,29 @@
                     <div id="toggle-filters">
                         <a href="#!">Advanced search</a>
                     </div>
-                    <label class="right">
-                        Found @{
-                        results.fold(_.size, _ => 0)
-                    } results in @{
-                        timeTaken.toMillis / 1000.0
-                    } seconds
-                    </label>
                 </div>
-
-                <div class="col m12">
-                    <div class="more-info">
-                        @queryInfo.detectedLang match {
-                            case Some(s) => {
-                                <label>Language detected: @s</label>
-                            }
-                            case None => {
-                                <label>No language detected</label>
-                            }
-                        } <br>
-                        <label><div class="toggle-features"> Number of <a href="#!">
-                            features detected:</a> @queryInfo.features.size</div></label>
-                    </div>
-
-                    <div id="toggle-more-info">
-                        <a href="#!">More info</a>
-                    </div>
+                <div class="col m6">
+                @if(search.query.isDefined) {
+                    <label class="right">
+                        @queryInfo.detectedLang.map { lang =>
+                            Language detected is @lang
+                        }.getOrElse {
+                            We could not detect the language
+                        }
+                    with
+                        <a class="modal-trigger" href="#features">@queryInfo.features.size features </a>
+                    </label>
+                    <br>
+                    <label class="right">
+                        Found
+                        @results.fold(_.size, _ => 0)
+                        results in
+                        @{
+                            timeTaken.toMillis / 1000.0
+                        }
+                        seconds
+                    </label>
+                }
                 </div>
 
 
