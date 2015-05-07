@@ -102,7 +102,7 @@
                                         </h6>
 
                                         <div>
-                                            <pre class="brush: scala; first-line: @entry.startLine; toolbar: false;">@entry.code.getOrElse(entry, "Could not fetch code preview")</pre>
+                                            <pre class="@entry.language.map{l => brush: @l} first-line: @entry.startLine; toolbar: false;">@entry.code.getOrElse(entry, "Could not fetch code preview")</pre>
                                         </div>
                                     </div>
                                     <div class="card-action">
