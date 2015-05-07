@@ -26,7 +26,7 @@ object SearchService {
     val result = (clusterClient ? ClusterClient.Send("/user/lookup", request, localAffinity = true))
       .collect { case s: SearchResult => s }
       .recover {
-      case e: AskTimeoutException => SearchResultError("Timeout.")
+      case e: AskTimeoutException => SearchResultError("Timeout. Could not get a response from the search back-end in time.")
     }
 
     val timeTaken = result.map(_ => (System.nanoTime() - startTime) nanoseconds)
