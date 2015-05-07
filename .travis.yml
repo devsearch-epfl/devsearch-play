@@ -1,6 +1,8 @@
 language: scala
 script:
-    - sbt clean update compile test
+    - sbt clean update compile test doc
+after_script:
+    - ./update_scaladoc.sh
 jdk:
     - openjdk7
-    - openjdk6
+    - oraclejdk8 
