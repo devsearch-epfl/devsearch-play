@@ -1,5 +1,5 @@
-@(search: controllers.Application.SearchQuery, result: Option[devsearch.lookup.SearchResult], snippets: Map[devsearch.lookup.SearchResultEntry, String], langs : Set[String], detectedLanguage: Option[String], detectedFeatures: List[String])
-@import devsearch.lookup._
+@(search: Application.SearchQuery, queryInfo : QueryInfo, results : Either[Seq[SnippetResult], String])(implicit langs : Set[String] = devsearch.parsers.Languages.supportedLanguages)
+
 @import helper.form
 
 @main("Search Code") {
@@ -43,7 +43,7 @@
 
                         <div class="col m12">
                             <div class="more-info">
-                                @detectedLanguage match {
+                                @queryInfo.detectedLang match {
                                     case Some(s) => {
                                         <label>Language detected: @s</label>
                                     }
@@ -51,7 +51,7 @@
                                         <label>No language detected</label>
                                     }
                                 }<br>
-                                <label><div class="toggle-features"> Number of <a href="#!">features detected:</a> @detectedFeatures.length</div></label>
+                                <label><div class="toggle-features"> Number of <a href="#!">features detected:</a> @queryInfo.features.size</div></label>
                             </div>
 
                             <div id="toggle-more-info">
@@ -76,33 +76,33 @@
         </div>
             <div class="row">
 
-            @result match {
-                case Some(SearchResultSuccess(Seq())) => {
-                    <h3>No result found.</h3>
-                }
-                case Some(SearchResultSuccess(entries)) => {
-                    <div class="col s12">Results found: @entries.size <div>
-                    @for(entry <- entries) {
-                        <div class="col s12">
-                            <div class="card">
-                                <div class="card-content">
-                                        <!-- todo: make this formatting better -->
-                                    @entry.repo&nbsp;
-                                    <span class="card-title activator grey-text text-darken-4">@entry.path <i class="mdi-navigation-more-vert right"></i></span>
-                                        &nbsp;(@entry.line)
-                                    <div class="card-image waves-effect waves-block waves-light">
-                                        <pre class="brush: scala; first-line: 10; toolbar: false;">@snippets.getOrElse(entry, "Could not fetch code preview")</pre>
+                @if(search.query.isDefined){
+                    @results match {
+                        case Left(entries) if entries.isEmpty => {
+                            <h3>No result found.</h3>
+                        }
+                        case Left(entries) => {
+                            <div class="col s12">Results found: @entries.size <div>
+                                @for(entry <- entries) {
+                                    <div class="col s12">
+                                        <div class="card">
+                                            <div class="card-content">
+                                                    <!-- todo: make this formatting better -->
+                                                @entry.repo&nbsp;
+                                                <span class="card-title activator grey-text text-darken-4">@entry.path <i class="mdi-navigation-more-vert right"></i></span>
+                                                    &nbsp;(@entry.startLine)
+                                                <div class="card-image waves-effect waves-block waves-light">
+                                                    <pre class="brush: scala; first-line: 10; toolbar: false;">@entry.code.getOrElse(entry, "Could not fetch code preview")</pre>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
-                                </div>
-                            </div>
-                        </div>
-                    }
-                }
-                case Some(SearchResultError(error)) => {
-                    <h3>Something went wrong. Sorry.</h3>
-                    <p>@error</p>
-                }
-                case None => {
+                                }
+                            }
+                        case Right(error) => {
+                            <h3>Something went wrong. Sorry.</h3>
+                            <p>@error</p>
+                        }
                 }
             }
 
