@@ -40,8 +40,8 @@ object SearchService {
     val results = (clusterClient ? ClusterClient.Send("/user/lookup", SearchRequest(featureKeys), localAffinity = true))
       .collect { case s: SearchResult => s }
       .recover {
-        case e: AskTimeoutException => SearchResultError("Timeout.")
-      }
+      case e: AskTimeoutException => SearchResultError("Timeout.")
+    }
 
     results.onSuccess {
       case SearchResultError(message) => Logger.error(s"error: $message")
