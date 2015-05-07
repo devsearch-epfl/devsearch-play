@@ -1,19 +1,20 @@
 package controllers
 
+import devsearch.features.{FeatureRecognizer, QueryRecognizer}
 import devsearch.lookup._
 import devsearch.parsers.Languages
-import play.api.data.{FormError, Form}
+import models.{QueryInfo, SnippetResult}
 import play.api.data.Forms._
 import play.api.data.format.Formatter
+import play.api.data.{Form, FormError}
 import play.api.mvc._
-import services.{SnippetFetcher, SearchService}
+import services.{SearchService, SnippetFetcher}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-import scala.concurrent.duration._
-import scala.language.postfixOps
+import scala.concurrent.duration.Duration
 import scala.language.experimental.macros
-import scala.util.{Try, Failure, Success}
+import scala.language.postfixOps
 
 
 object Application extends Controller {
@@ -25,18 +26,22 @@ object Application extends Controller {
   /* Extract language selectors from the form */
   val languageFormatter = new Formatter[Set[String]] {
     override def bind(key: String, data: Map[String, String]): Either[Seq[FormError], Set[String]] = {
-      val res = if(key != "languages") Set.empty[String] else data.filter{
+      val res = if (key != "languages") Set.empty[String]
+      else data.filter {
         case (k, v) => Languages.isLanguageSupported(k) && v == "on"
       }.keySet
 
       Right(res)
     }
+
     override def unbind(key: String, value: Set[String]): Map[String, String] = {
-      if(key !="languages") Map.empty else value.map(_ -> "on").toMap
+      if (key != "languages") Map.empty else value.map(_ -> "on").toMap
     }
   }
 
   case class SearchQuery(query: Option[String], langSelectors: Set[String])
+
+  val EmptySearch = SearchQuery(None, Set.empty)
   val searchForm = Form(
     mapping(
       "query" -> optional(text),
@@ -44,31 +49,43 @@ object Application extends Controller {
     )(SearchQuery.apply)(SearchQuery.unapply)
   )
 
+
   def search = Action.async { implicit req =>
 
     val search = searchForm.bindFromRequest.get
 
-    val timeout = 10 seconds
-    val (detectedLanguage: Option[String], detectedFeatures : List[String], futureResults: Future[Option[SearchResult]]) = search.query match {
-      case Some(query) =>
-        val temp = SearchService.get(query, timeout)
-        (temp._1, temp._2.map(Some(_)), temp._3.map(Some(_)))
-      case None => (None, List(), Future.successful(None))
+    search.query map { query =>
+
+
+      val queryInfo = QueryRecognizer(query) map { codeFile =>
+        QueryInfo(query, Some(codeFile.language), FeatureRecognizer(codeFile).map(_.key))
+      } getOrElse {
+        QueryInfo(query, None, Set.empty)
+      }
+
+      val futureResults = SearchService.get(SearchRequest(queryInfo.features.toSeq))
+
+      /** Either result or error message */
+      val futureSnippets: Future[(Either[Seq[SnippetResult], String], Duration)] = futureResults.flatMap {
+        case (results, time) =>
+
+          val snippets = results match {
+            case SearchResultSuccess(entries) =>
+              val withSnippets = entries.map { e => SnippetFetcher.getSnippetCode(e, 10) }
+              Future.sequence(withSnippets).map(Left(_))
+
+            case SearchResultError(msg) => Future.successful(Right(msg))
+          }
+
+          snippets map ((_, time))
+      }
+
+      for ((results, timeTaken) <- futureSnippets) yield Ok(views.html.search(search, queryInfo, results, timeTaken))
+
+
+    } getOrElse {
+      Future.successful(Ok(views.html.search(EmptySearch, QueryInfo("", None, Set.empty), Left(Seq.empty), Duration.Zero)))
     }
 
-    val snippets: Future[Map[SearchResultEntry, String]] = futureResults.flatMap {
-      case Some(SearchResultSuccess(entries)) =>
-
-        /* Fetch all the snippets */
-        val futureSnippets = entries.map(e => SnippetFetcher.getSnippetCode(e, 10).map(snip => (e, snip)))
-
-        /* Keep only the successful ones */
-        val successfulSnippets = futureSnippets.map(f => f.map[Try[(SearchResultEntry, String)]](Success(_)).recover{case x : Throwable => Failure(x)})
-
-        Future.sequence(successfulSnippets).map(list => list.collect { case Success(x) => x } toMap )
-      case _ => Future.successful(Map.empty)
-    }
-
-    for (results <- futureResults; snips <- snippets) yield Ok(views.html.search(search, results, snips, Languages.supportedLanguages(), detectedLanguage, detectedFeatures))
   }
 }

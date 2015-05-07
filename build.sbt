@@ -22,7 +22,7 @@ libraryDependencies ++= Seq(
   "com.decodified" %% "scala-ssh" % "0.7.0",
   "org.scalatest" %% "scalatest" % "2.1.7" % "test",
   "xalan" % "serializer" % "2.7.2",
-   "com.typesafe.akka" %% "akka-contrib" % "2.3.9"
+  "com.typesafe.akka" %% "akka-contrib" % "2.3.9"
 )
 
 // Less configuration
