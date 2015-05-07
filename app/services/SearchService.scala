@@ -17,14 +17,20 @@ object SearchService {
   val clusterClient = Akka.system.actorOf(ClusterClient.props(initialContacts), "clusterClient")
 
 
-  def get(request: SearchRequest, maxDuration: FiniteDuration = 10 seconds): Future[SearchResult] = {
+  def get(request: SearchRequest, maxDuration: FiniteDuration = 10 seconds): Future[(SearchResult, Duration)] = {
+
+    val startTime = System.nanoTime()
 
     implicit val timeout = new Timeout(maxDuration)
 
-    (clusterClient ? ClusterClient.Send("/user/lookup", request, localAffinity = true))
+    val result = (clusterClient ? ClusterClient.Send("/user/lookup", request, localAffinity = true))
       .collect { case s: SearchResult => s }
       .recover {
       case e: AskTimeoutException => SearchResultError("Timeout.")
     }
+
+    val timeTaken = result.map(_ => (System.nanoTime() - startTime) nanoseconds)
+
+    for (res <- result; t <- timeTaken) yield (res, t)
   }
 }

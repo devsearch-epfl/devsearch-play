@@ -1,4 +1,4 @@
-@(search: Application.SearchQuery, queryInfo : QueryInfo, results : Either[Seq[SnippetResult], String])(implicit langs : Set[String] = devsearch.parsers.Languages.supportedLanguages)
+@(search: Application.SearchQuery, queryInfo : QueryInfo, results : Either[Seq[SnippetResult], String], timeTaken : scala.concurrent.duration.Duration)(implicit langs : Set[String] = devsearch.parsers.Languages.supportedLanguages)
 
 @import helper.form
 
@@ -39,6 +39,9 @@
                             <div id="toggle-filters">
                                 <a href="#!">Advanced search</a>
                             </div>
+                            <label class="right">
+                                Found @{results.fold(_.size, _ => 0)} results in @{timeTaken.toMillis / 1000.0} seconds
+                            </label>
                         </div>
 
                         <div class="col m12">
