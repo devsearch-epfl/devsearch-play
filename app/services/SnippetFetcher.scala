@@ -25,14 +25,15 @@ object SnippetFetcher {
     val encodedPath = encodeGithubPath(entry.path)
     val url = s"https://raw.githubusercontent.com/$encodedUser/$encodedRepo/master/$encodedPath"
 
-    val size = entry.lineEnd - entry.lineStart
+    val size = entry.lineEnd - entry.lineStart + 1
 
-    val code = WS.url(url).get().map { result =>
+    val code = WS.url(url).get().collect { case result if result.status == 200 =>
       result.body.lines.drop(entry.lineStart - 1).take(size).mkString("\n")
     }
 
     code.map(Some(_)).recover{ case _ : Throwable => None } map { codeOpt =>
-      SnippetResult(entry.user, entry.repo, entry.path, entry.lineStart, entry.lineEnd, codeOpt)
+      SnippetResult(entry.user, entry.repo, entry.path, entry.lineStart,
+        entry.lineEnd, entry.scoreBreakDown, entry.featureList, codeOpt)
     }
   }
 

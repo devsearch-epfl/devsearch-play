@@ -104,15 +104,46 @@
                                         </h6>
 
                                         <div>
-                                            <pre class="@entry.language.map { l => brush: @l } first-line: @entry.startLine; toolbar: false;">@entry.code.getOrElse(entry, "Could not fetch code preview")</pre>
+                                            @entry.code.map{ snippet =>
+                                                <pre class="@entry.language.map { l => brush: @l } first-line: @entry.startLine; toolbar: false;">@snippet</pre>
+                                            }.getOrElse{
+                                                <blockquote>Could not load code preview</blockquote>
+                                            }
                                         </div>
                                     </div>
                                     <div class="card-action">
                                         <a href="@entry.previewUrl" class="blue-text">SEE CODE</a>
                                     </div>
                                     <div class="card-reveal">
-                                        <span class="card-title grey-text text-darken-4">Card Title <i class="mdi-navigation-close right"></i></span>
-                                        <p>Here is some more information about this product that is only revealed once clicked on.</p>
+                                        <span class="card-title grey-text text-darken-4">
+                                            Informations about this match <i class="mdi-navigation-close right"></i>
+                                        </span>
+                                        <div class="row">
+                                            <div class="col s6">
+                                                <ul class="collection with-header">
+                                                    <li class="collection-header">
+                                                        <b>Matched Features</b> 
+                                                    </li>    
+                                                    @entry.featureList.map{ feature =>
+                                                    <li class="collection-item">
+                                                        @feature
+                                                    </li>
+                                                    }
+                                                </ul>
+                                            </div>
+                                            <div class="col s6">
+                                                <ul class="collection with-header">
+                                                    <li class="collection-header">
+                                                        <b>Score Breakdown</b>
+                                                    </li>
+                                                @entry.scoreBreakDown.map{s => 
+                                                    <li class="collection-item">
+                                                        @s._1 = @s._2
+                                                    </li>
+                                                }
+                                                </ul>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
