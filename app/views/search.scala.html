@@ -1,4 +1,4 @@
-@(search: Application.SearchQuery, queryInfo: QueryInfo, results: Either[Seq[SnippetResult], String], timeTaken: scala.concurrent.duration.Duration)(implicit langs: Seq[String] = devsearch.parsers.Languages.supportedLanguages.toSeq.sorted.filterNot(_ == "QueryLang"))
+@(search: Application.SearchQuery, queryInfo: QueryInfo, results: Either[(Seq[SnippetResult], Long), String], timeTaken: scala.concurrent.duration.Duration)(implicit langs: Seq[String] = devsearch.parsers.Languages.supportedLanguages.toSeq.sorted.filterNot(_ == "QueryLang"))
 
 @import helper.form
 
@@ -69,7 +69,7 @@
                     <br>
                     <label class="right">
                         Found
-                        @results.fold(_.size, _ => 0)
+                        @results.fold(_._2, _ => 0)
                         results in
                         @{
                             timeTaken.toMillis / 1000.0
@@ -88,10 +88,10 @@
 
             @if(search.query.isDefined) {
                 @results match {
-                    case Left(entries) if entries.isEmpty => {
+                    case Left((entries, _)) if entries.isEmpty => {
                         <h3>No result found.</h3>
                     }
-                    case Left(entries) => {
+                    case Left((entries, _)) => {
                         @for(entry <- entries) {
                             <div class="col s12">
                                 <div class="card grey lighten-5">

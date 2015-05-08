@@ -66,13 +66,13 @@ object Application extends Controller {
       val futureResults = SearchService.get(SearchRequest(queryInfo.features, search.langSelectors.toSeq))
 
       /** Either result or error message */
-      val futureSnippets: Future[(Either[Seq[SnippetResult], String], Duration)] = futureResults.flatMap {
+      val futureSnippets: Future[(Either[(Seq[SnippetResult], Long), String], Duration)] = futureResults.flatMap {
         case (results, time) =>
 
           val snippets = results match {
-            case SearchResultSuccess(entries) =>
-              val withSnippets = entries.map { e => SnippetFetcher.getSnippetCode(e, 10) }
-              Future.sequence(withSnippets).map(Left(_))
+            case SearchResultSuccess(entries, count) =>
+              val withSnippets = entries.map { SnippetFetcher.getSnippetCode }
+              Future.sequence(withSnippets).map(res => Left((res, count)))
 
             case SearchResultError(msg) => Future.successful(Right(msg))
           }
@@ -84,7 +84,7 @@ object Application extends Controller {
 
 
     } getOrElse {
-      Future.successful(Ok(views.html.search(EmptySearch, QueryInfo("", None, Set.empty), Left(Seq.empty), Duration.Zero)))
+      Future.successful(Ok(views.html.search(EmptySearch, QueryInfo("", None, Set.empty), Left((Seq.empty, 0)), Duration.Zero)))
     }
 
   }
