@@ -1,4 +1,4 @@
-@(search: Application.SearchQuery, queryInfo: QueryInfo, results: Either[Seq[SnippetResult], String], timeTaken: scala.concurrent.duration.Duration)(implicit langs: Set[String] = devsearch.parsers.Languages.supportedLanguages)
+@(search: Application.SearchQuery, queryInfo: QueryInfo, results: Either[Seq[SnippetResult], String], timeTaken: scala.concurrent.duration.Duration)(implicit langs: Seq[String] = devsearch.parsers.Languages.supportedLanguages.toSeq.sorted.filterNot(_ == "QueryLang"))
 
 @import helper.form
 
@@ -98,15 +98,17 @@
                                     <div class="card-content">
 
                                         <h6 class="card-title grey-text text-darken-4">
-                                            <span>  <b>@entry.user/@entry.repo</b> @entry.truncadedPath </span><a class="black-text" href="#!"><i class="activator mdi-navigation-more-vert right"></i></a>
+                                            <span> <a href="@entry.repoUrl"><b>@entry.user
+                                                /@entry.repo</b>
+                                            </a> @entry.truncadedPath </span> <a class="black-text" href="#!"><i class="activator mdi-navigation-more-vert right"></i></a>
                                         </h6>
 
                                         <div>
-                                            <pre class="@entry.language.map{l => brush: @l} first-line: @entry.startLine; toolbar: false;">@entry.code.getOrElse(entry, "Could not fetch code preview")</pre>
+                                            <pre class="@entry.language.map { l => brush: @l } first-line: @entry.startLine; toolbar: false;">@entry.code.getOrElse(entry, "Could not fetch code preview")</pre>
                                         </div>
                                     </div>
                                     <div class="card-action">
-                                        <a href="@entry.previewUrl" class="blue-text">See Code</a>
+                                        <a href="@entry.previewUrl" class="blue-text">SEE CODE</a>
                                     </div>
                                     <div class="card-reveal">
                                         <span class="card-title grey-text text-darken-4">Card Title <i class="mdi-navigation-close right"></i></span>
