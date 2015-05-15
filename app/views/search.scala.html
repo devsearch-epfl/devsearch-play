@@ -1,6 +1,7 @@
 @(search: Application.SearchQuery, queryInfo: QueryInfo, results: Either[(Seq[SnippetResult], Long), String], timeTaken: scala.concurrent.duration.Duration)(implicit langs: Seq[String] = devsearch.parsers.Languages.supportedLanguages.toSeq.sorted.filterNot(_ == "QueryLang"))
 
 @import helper.form
+@import views.Utils
 
 @main("Search Code") {
 
@@ -10,9 +11,9 @@
         <div class="modal-content">
             <h4>Detected Features</h4>
             <ul class="collection">
-            @queryInfo.features.map { feature =>
-                <li class="collection-item">@feature</li>
-            }
+                @queryInfo.features.map(Utils.toPrettyString).map { feature =>
+                    <li class="collection-item">@feature</li>
+                }
             </ul>
         </div>
     </div>
