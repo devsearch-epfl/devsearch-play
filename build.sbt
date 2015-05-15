@@ -30,3 +30,5 @@ libraryDependencies ++= Seq(
 includeFilter in (Assets, LessKeys.less) := "*.less"
 
 excludeFilter in (Assets, LessKeys.less) := "_*.less"
+
+target in Compile in doc := baseDirectory.value / "api"
