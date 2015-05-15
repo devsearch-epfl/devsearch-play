@@ -58,7 +58,7 @@ object Application extends Controller {
 
 
       val queryInfo = QueryRecognizer(query) map { codeFile =>
-        QueryInfo(query, Some(codeFile.language), FeatureRecognizer(codeFile).map(_.key))
+        QueryInfo(query, Some(codeFile.language), FeatureRecognizer(codeFile).map(_.toNiceString))
       } getOrElse {
         QueryInfo(query, None, Set.empty)
       }
