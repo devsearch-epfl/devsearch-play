@@ -50,6 +50,8 @@ object Application extends Controller {
   )
 
 
+
+
   def search = Action.async { implicit req =>
 
     val search = searchForm.bindFromRequest.get
@@ -58,12 +60,12 @@ object Application extends Controller {
 
 
       val queryInfo = QueryRecognizer(query) map { codeFile =>
-        QueryInfo(query, Some(codeFile.language), FeatureRecognizer(codeFile).map(_.key))
+        QueryInfo(query, Some(codeFile.language), FeatureRecognizer(codeFile))
       } getOrElse {
         QueryInfo(query, None, Set.empty)
       }
 
-      val futureResults = SearchService.get(SearchRequest(queryInfo.features, search.langSelectors))
+      val futureResults = SearchService.get(SearchRequest(queryInfo.features.map(_.key), search.langSelectors))
 
       /** Either result or error message */
       val futureSnippets: Future[(Either[(Seq[SnippetResult], Long), String], Duration)] = futureResults.flatMap {
