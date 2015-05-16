@@ -1,6 +1,7 @@
 package models
 
 import devsearch.parsers.Languages
+import devsearch.features.Feature
 
 /**
  * Created by dengels on 07/05/15.
@@ -26,4 +27,4 @@ case class SnippetResult(user: String, repo: String, path: String, startLine: In
   }
 }
 
-case class QueryInfo(query : String, detectedLang : Option[String], features : Set[String])
+case class QueryInfo(query : String, detectedLang : Option[String], features : Set[Feature])
