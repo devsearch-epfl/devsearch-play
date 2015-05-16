@@ -3,7 +3,64 @@
 @import helper.form
 @import views.Utils
 
-@main("Search Code") {
+    @resultsOrEmpty=@{results.left.map(_._1).left.getOrElse(Seq.empty)}
+
+    @jsResults=@{
+        def entryToJsObj(e : SnippetResult) = {
+            val id = s"score_${e.hashCode.abs}"
+            val score = e.scoreBreakDown.map{ case (k, v) => s"$k : $v" }
+            s"{id : $id, ${score.mkString(", ")}}"
+        }
+
+        resultsOrEmpty.map(entryToJsObj)
+    }
+
+    @js = {
+        <script>
+            $(function(){
+
+            $(document).on('click.card', '.card', function (e) {
+                if($(e.target).is('.activator')){
+                    var revealSize = $(this).find('.card-reveal').prop("scrollHeight");
+                    $(this).animate({height: revealSize}, 500);
+                } else if($(this).find('.card-reveal .card-title').has(e.target).length != 0 || $(e.target).is('.card-reveal .card-title')) {
+                    var el = $(this),
+                    curHeight = el.height(),
+                    autoHeight = el.css('height', 'auto').height();
+                    el.height(curHeight).animate({height: autoHeight}, 500);
+                }
+            });
+
+            var scores=@jsResults.mkString("[", ", ", "]");
+
+            $.each(scores, function(key, value){
+                var ctx = $(value.id).get(0).getContext("2d");;
+                var data = {
+                    labels: ["Feature Density", "Cluster Size", "Ratio of Matches"],
+                    datasets: [
+                        {
+                            label: "Score Breakdown",
+                            fillColor: "rgba(33, 150, 243, 0.5)",
+                            strokeColor: "rgba(33, 150, 243, 0.8)",
+                            pointColor: "rgba(33, 150, 243, 1)",
+                            pointStrokeColor: "#fff",
+                            pointHighlightFill: "#fff",
+                            pointHighlightStroke: "rgba(33, 150, 243, 1)",
+
+                            data: [value.density, value.size, value.ratioOfMatches]
+                        }
+                    ]
+                };
+
+                new Chart(ctx).Radar(data);
+            })
+
+            }); // end of document ready
+        </script>
+
+    }
+
+@main("Search Code", js = js) {
 
 
     <!-- Modal Structure -->
@@ -87,6 +144,7 @@
 
             <div class="row">
 
+
             @if(search.query.isDefined) {
                 @results match {
                     case Left((entries, _)) if entries.isEmpty => {
@@ -123,8 +181,8 @@
                                             <div class="col s6">
                                                 <ul class="collection with-header">
                                                     <li class="collection-header">
-                                                        <b>Matched Features</b> 
-                                                    </li>    
+                                                        <b>Matched Features</b>
+                                                    </li>
                                                     @entry.featureList.map{ feature =>
                                                     <li class="collection-item">
                                                         @feature
@@ -132,17 +190,9 @@
                                                     }
                                                 </ul>
                                             </div>
-                                            <div class="col s6">
-                                                <ul class="collection with-header">
-                                                    <li class="collection-header">
-                                                        <b>Score Breakdown</b>
-                                                    </li>
-                                                @entry.scoreBreakDown.map{s => 
-                                                    <li class="collection-item">
-                                                        @s._1 = @s._2
-                                                    </li>
-                                                }
-                                                </ul>
+                                            <div class="col s6 center">
+                                                <h5>Score breakdown</h5>
+                                                <canvas id="score_@entry.hashCode.abs"></canvas>
                                             </div>
                                         </div>
                                     </div>

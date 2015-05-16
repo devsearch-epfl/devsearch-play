@@ -2,9 +2,6 @@ name := """devsearch-play"""
 
 version := "1.0-SNAPSHOT"
 
-//lazy val root = (project in file(".")).enablePlugins(PlayScala)//.dependsOn(astParser)
-//lazy val astParser = RootProject(uri("git://github.com/devsearch-epfl/devsearch-ast.git") )
-
 scalaVersion := "2.10.4"
 
 scalacOptions ++= Seq("-feature", "-deprecation", "-unchecked")
@@ -22,7 +19,8 @@ libraryDependencies ++= Seq(
   "com.decodified" %% "scala-ssh" % "0.7.0",
   "org.scalatest" %% "scalatest" % "2.1.7" % "test",
   "xalan" % "serializer" % "2.7.2",
-  "com.typesafe.akka" %% "akka-contrib" % "2.3.9"
+  "com.typesafe.akka" %% "akka-contrib" % "2.3.9",
+  "org.webjars.bower" % "Chart.js" % "1.0.2"
 )
 
 // Less configuration
