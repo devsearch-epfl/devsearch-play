@@ -1,4 +1,4 @@
-@(title: String)(content: Html)
+@(title: String, js : Html = Html(""))(content: Html)
 
 <!DOCTYPE html>
 <html lang="en">
@@ -17,6 +17,6 @@
 
 
         <!--  Scripts-->
-    @javascript()
+    @javascript(js)
 </body>
 </html>
