@@ -23,7 +23,7 @@
                 if($(e.target).is('.activator')){
                     var revealSize = $(this).find('.card-reveal').prop("scrollHeight");
                     $(this).animate({height: revealSize}, 500);
-                } else {
+                } else if($(this).find('.card-reveal .card-title').has(e.target).length != 0 || $(e.target).is('.card-reveal .card-title')) {
                     var el = $(this),
                     curHeight = el.height(),
                     autoHeight = el.css('height', 'auto').height();
