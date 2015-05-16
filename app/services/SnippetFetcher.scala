@@ -20,20 +20,24 @@ object SnippetFetcher {
 
   def getSnippetCode(entry: SearchResultEntry): Future[SnippetResult] = {
 
+    val result = SnippetResult(entry.user, entry.repo, entry.path, entry.lineStart,
+      entry.lineEnd, entry.scoreBreakDown, entry.featureList, None)
+
     val encodedUser = encodeGithubPath(entry.user)
     val encodedRepo = encodeGithubPath(entry.repo)
     val encodedPath = encodeGithubPath(entry.path)
     val url = s"https://raw.githubusercontent.com/$encodedUser/$encodedRepo/master/$encodedPath"
 
-    val size = entry.lineEnd - entry.lineStart + 1
+    val endLine = result.extendedEndLine
+    val startLine = result.extendedStartLine
+    val size = endLine - startLine+ 1
 
     val code = WS.url(url).get().collect { case result if result.status == 200 =>
-      result.body.lines.drop(entry.lineStart - 1).take(size).mkString("\n")
+      result.body.lines.drop(startLine - 1).take(size).mkString("\n")
     }
 
-    code.map(Some(_)).recover{ case _ : Throwable => None } map { codeOpt =>
-      SnippetResult(entry.user, entry.repo, entry.path, entry.lineStart,
-        entry.lineEnd, entry.scoreBreakDown, entry.featureList, codeOpt)
+    code.map(Some(_)).recover { case _ : Throwable => None } map { codeOpt =>
+        result.copy(code = codeOpt)
     }
   }
 

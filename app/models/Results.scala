@@ -25,6 +25,9 @@ case class SnippetResult(user: String, repo: String, path: String, startLine: In
   } else {
     path
   }
+
+  def extendedStartLine = math.max(0, startLine - 3)
+  def extendedEndLine = endLine + 3
 }
 
 case class QueryInfo(query : String, detectedLang : Option[String], features : Set[Feature])

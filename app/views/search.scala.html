@@ -164,7 +164,7 @@
 
                                         <div>
                                             @entry.code.map{ snippet =>
-                                                <pre class="@entry.language.map { l => brush: @l } first-line: @entry.startLine; toolbar: false;">@snippet</pre>
+                                                <pre class="@entry.language.map { l => brush: @l } first-line: @entry.extendedStartLine; toolbar: false;">@snippet</pre>
                                             }.getOrElse{
                                                 <blockquote>Could not load code preview</blockquote>
                                             }
