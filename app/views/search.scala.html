@@ -3,20 +3,22 @@
 @import helper.form
 @import views.Utils
 
-    @resultsOrEmpty=@{results.left.map(_._1).left.getOrElse(Seq.empty)}
+@resultsOrEmpty = @{
+    results.left.map(_._1).left.getOrElse(Seq.empty)
+}
 
-    @jsResults=@{
-        def entryToJsObj(e : SnippetResult) = {
-            val id = s"score_${e.hashCode.abs}"
-            val score = e.scoreBreakDown.map{ case (k, v) => s"$k : $v" }
-            s"{id : $id, ${score.mkString(", ")}}"
-        }
-
-        resultsOrEmpty.map(entryToJsObj)
+@jsResults = @{
+    def entryToJsObj(e: SnippetResult) = {
+        val id = s"score_${e.hashCode.abs}"
+        val score = e.scoreBreakDown.map { case (k, v) => s"$k : $v" }
+        s"{id : $id, ${score.mkString(", ")}}"
     }
 
-    @js = {
-        <script>
+    resultsOrEmpty.map(entryToJsObj)
+}
+
+@js = {
+    <script>
             $(function(){
 
             $(document).on('click.card', '.card', function (e) {
@@ -58,156 +60,188 @@
             }); // end of document ready
         </script>
 
-    }
+}
 
 @main("Search Code", js = js) {
 
+    @form(routes.Application.search()) {
 
-    <!-- Modal Structure -->
-    <div id="features" class="modal">
-        <div class="modal-content">
-            <h4>Detected Features</h4>
-            <ul class="collection">
+        <!-- Modal Structure -->
+        <div id="features" class="modal">
+            <div class="modal-content">
+                <h4>Detected Features</h4>
+                <ul class="collection">
                 @queryInfo.features.map(Utils.toPrettyString).map { feature =>
                     <li class="collection-item">@feature</li>
                 }
-            </ul>
-        </div>
-    </div>
-
-    <div class="container">
-        <div class="section">
-
-
-            <div class="row search-box">
-            @form(routes.Application.search()) {
-                <div class="input-field col m12">
-                    <i class="mdi-hardware-keyboard-arrow-right prefix"></i>
-                    <label for="code-paste1">Paste your code here</label>
-                    <textarea rows="8" id="code-paste1" class="materialize-textarea" name="query">@search.query.getOrElse("")</textarea>
-                </div>
-                <button id="search-btn" class="search-float btn-floating btn-large waves-effect waves-light blue" type="submit">
-                    <i class="large mdi-action-search"></i>
-                </button>
-                <div id="search-spin" class="search-float preloader-wrapper active">
-                    <div class="spinner-layer spinner-blue-only">
-                        <div class="circle-clipper left">
-                            <div class="circle"></div></div>
-                        <div class="gap-patch">
-                            <div class="circle"></div></div>
-                        <div class="circle-clipper right">
-                            <div class="circle"></div></div>
-                    </div>
-                </div>
-
-                <div class="col m6">
-                    @langs.map { lang =>
-                        <div class="language-filter">
-                            <input @if(search.langSelectors.contains(lang)) {
-                                checked="checked"
-                            } type="checkbox" id="@lang-filter" name="@lang" />
-                            <label for="@lang-filter">@lang.capitalize</label>
-                        </div>
-                    }
-                    <div id="toggle-filters">
-                        <a href="#!">Advanced search</a>
-                    </div>
-                </div>
-                <div class="col m6">
-                @if(search.query.isDefined) {
-                    <label class="right">
-                        @queryInfo.detectedLang.map { lang =>
-                            Language detected is @lang
-                        }.getOrElse {
-                            We could not detect the language
-                        }
-                    with
-                        <a class="modal-trigger" href="#features">@queryInfo.features.size features </a>
-                    </label>
-                    <br>
-                    <label class="right">
-                        Found
-                        @results.fold(_._2, _ => 0)
-                        results in
-                        @{
-                            timeTaken.toMillis / 1000.0
-                        }
-                        seconds
-                    </label>
-                }
-                </div>
-
-
-            }
+                </ul>
             </div>
+        </div>
 
+        <div class="container">
+            <div class="section">
 
-            <div class="row">
+                    <!-- Search box -->
+                <div class="row search-box">
+                    <div class="input-field col m12">
+                        <i class="mdi-hardware-keyboard-arrow-right prefix"></i>
+                        <label for="code-paste1">Paste your code here</label>
+                        <textarea rows="8" id="code-paste1" class="materialize-textarea" name="query">@search.query.getOrElse("")</textarea>
+                    </div>
+                    <button id="search-btn" class="search-float btn-floating btn-large waves-effect waves-light blue" type="submit">
+                        <i class="large mdi-action-search"></i>
+                    </button>
+                    <div id="search-spin" class="search-float preloader-wrapper active">
+                        <div class="spinner-layer spinner-blue-only">
+                            <div class="circle-clipper left">
+                                <div class="circle"></div></div>
+                            <div class="gap-patch">
+                                <div class="circle"></div></div>
+                            <div class="circle-clipper right">
+                                <div class="circle"></div></div>
+                        </div>
+                    </div>
 
-
-            @if(search.query.isDefined) {
-                @results match {
-                    case Left((entries, _)) if entries.isEmpty => {
-                        <h3>No result found.</h3>
+                    <div class="col m6">
+                        @langs.map { lang =>
+                            <div class="language-filter">
+                                <input @if(search.langSelectors.contains(lang)) {
+                                    checked="checked"
+                                } type="checkbox" id="@lang-filter" name="@lang" />
+                                <label for="@lang-filter">@lang.capitalize</label>
+                            </div>
+                        }
+                        <div id="toggle-filters">
+                            <a href="#!">Advanced search</a>
+                        </div>
+                    </div>
+                    <div class="col m6">
+                    @if(search.query.isDefined) {
+                        <label class="right">
+                            @queryInfo.detectedLang.map { lang =>
+                                Language detected is @lang
+                            }.getOrElse {
+                                We could not detect the language
+                            }
+                        with
+                            <a class="modal-trigger" href="#features">@queryInfo.features.size features </a>
+                        </label>
+                        <br>
+                        <label class="right">
+                            Found
+                            @results.fold(_._2, _ => 0)
+                            results in
+                            @{
+                                timeTaken.toMillis / 1000.0
+                            }
+                            seconds
+                        </label>
                     }
-                    case Left((entries, _)) => {
-                        @for(entry <- entries) {
-                            <div class="col s12">
-                                <div class="card grey lighten-5">
-                                    <div class="card-content">
+                    </div>
 
-                                        <h6 class="card-title grey-text text-darken-4">
-                                            <span> <a href="@entry.repoUrl"><b>@entry.user
-                                                /@entry.repo</b>
-                                            </a> @entry.truncadedPath </span> <a class="black-text" href="#!"><i class="activator mdi-navigation-more-vert right"></i></a>
-                                        </h6>
 
-                                        <div>
-                                            @entry.code.map{ snippet =>
-                                                <pre class="@entry.language.map { l => brush: @l } first-line: @entry.extendedStartLine; toolbar: false;">@snippet</pre>
-                                            }.getOrElse{
+                </div>
+
+                    <!-- Search Results -->
+                <div class="row">
+
+                @if(search.query.isDefined) {
+                    @results match {
+                        case Left((entries, _)) if entries.isEmpty => {
+                            <h3>No result found.</h3>
+                        }
+                        case Left((entries, _)) => {
+                            @for(entry <- entries) {
+                                <div class="col s12">
+                                    <div class="card grey lighten-5">
+                                        <div class="card-content">
+
+                                            <h6 class="card-title grey-text text-darken-4">
+                                                <span> <a href="@entry.repoUrl"><b>@entry.user
+                                                    /@entry.repo</b>
+                                                </a> @entry.truncadedPath </span> <a class="black-text" href="#!"><i class="activator mdi-navigation-more-vert right"></i></a>
+                                            </h6>
+
+                                            <div>
+                                            @entry.code.map { snippet =>
+                                            <pre class="@entry.language.map { l => brush: @l } first-line: @entry.extendedStartLine; toolbar: false;">@snippet</pre>
+                                            }.getOrElse {
                                                 <blockquote>Could not load code preview</blockquote>
                                             }
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div class="card-action">
-                                        <a href="@entry.previewUrl" class="blue-text">SEE CODE</a>
-                                    </div>
-                                    <div class="card-reveal">
-                                        <span class="card-title grey-text text-darken-4">
+                                        <div class="card-action">
+                                            <a href="@entry.previewUrl" class="blue-text">SEE CODE</a>
+                                        </div>
+                                        <div class="card-reveal">
+                                            <span class="card-title grey-text text-darken-4">
                                             Informations about this match <i class="mdi-navigation-close right"></i>
                                         </span>
-                                        <div class="row">
-                                            <div class="col s6">
-                                                <ul class="collection with-header">
-                                                    <li class="collection-header">
-                                                        <b>Matched Features</b>
-                                                    </li>
-                                                    @entry.featureList.map(Utils.toPrettyString).map{ feature =>
-                                                    <li class="collection-item">
-                                                        @feature
-                                                    </li>
-                                                    }
-                                                </ul>
-                                            </div>
-                                            <div class="col s6 center">
-                                                <h5>Score breakdown</h5>
-                                                <canvas id="score_@entry.hashCode.abs"></canvas>
+                                            <div class="row">
+                                                <div class="col s6">
+                                                    <ul class="collection with-header">
+                                                        <li class="collection-header">
+                                                            <b>Matched Features</b>
+                                                        </li>
+                                                        @entry.featureList.map(Utils.toPrettyString).map { feature =>
+                                                            <li class="collection-item">
+                                                                @feature
+                                                            </li>
+                                                        }
+                                                    </ul>
+                                                </div>
+                                                <div class="col s6 center">
+                                                    <h5>Score breakdown</h5>
+                                                    <canvas id="score_@entry.hashCode.abs"></canvas>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+                            }
+                        }
+                        case Right(error) => {
+                            <h3>Something went wrong. Sorry.</h3>
+                            <p>@error</p>
                         }
                     }
-                    case Right(error) => {
-                        <h3>Something went wrong. Sorry.</h3>
-                        <p>@error</p>
-                    }
                 }
-            }
+
+                </div>
+
+                    <!-- Paging -->
+                @results match {
+                    case Left((_, nbResults)) if nbResults != 0 => {
+                        <div class="row center">
+                            <ul class="pagination">
+
+                                <li class="disabled">
+                                    <i class="mdi-navigation-chevron-left"></i>
+                                </li>
+                                @* Page before *@
+                                @for(i <- math.max(1, queryInfo.page - 2) until queryInfo.page) {
+                                    <li class="waves-effect">
+                                        <input type="submit" name="page" value="@i">
+                                    </li>
+                                }
+
+                                <li class="active blue"><a href="#!">@queryInfo.page</a></li>
+                                @* Pages after *@
+                                @for(i <- (queryInfo.page + 1) to math.min(Utils.lastPage(nbResults), queryInfo.page + 2)) {
+                                    <li class="waves-effect">
+                                        <input type="submit" name="page" value="@i">
+                                    </li>
+                                }
+                                <li class="disabled">
+                                    <i class="mdi-navigation-chevron-right"></i>
+                                </li>
+                            </ul>
+                        </div>
+                    }
+                    case _ => {}
+                }
 
             </div>
         </div>
-    </div>
+    }
 }

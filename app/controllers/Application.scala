@@ -39,13 +39,14 @@ object Application extends Controller {
     }
   }
 
-  case class SearchQuery(query: Option[String], langSelectors: Set[String])
+  case class SearchQuery(query: Option[String], langSelectors: Set[String], page: Int)
 
-  val EmptySearch = SearchQuery(None, Set.empty)
+  val EmptySearch = SearchQuery(None, Set.empty, 1)
   val searchForm = Form(
     mapping(
       "query" -> optional(text),
-      "languages" -> of(languageFormatter)
+      "languages" -> of(languageFormatter),
+      "page" -> optional(number).transform[Int](_.getOrElse(1), i => Some(i)) // default page is 1
     )(SearchQuery.apply)(SearchQuery.unapply)
   )
 
@@ -57,15 +58,16 @@ object Application extends Controller {
     val search = searchForm.bindFromRequest.get
 
     search.query map { query =>
-
+      val first = (search.page - 1) * views.Utils.NB_RESULTS_IN_PAGE + 1
+      val len = views.Utils.NB_RESULTS_IN_PAGE
 
       val queryInfo = QueryRecognizer(query) map { codeFile =>
-        QueryInfo(query, Some(codeFile.language), FeatureRecognizer(codeFile))
+        QueryInfo(query, Some(codeFile.language), FeatureRecognizer(codeFile), search.page)
       } getOrElse {
-        QueryInfo(query, None, Set.empty)
+        QueryInfo(query, None, Set.empty, 1)
       }
 
-      val futureResults = SearchService.get(SearchRequest(queryInfo.features, search.langSelectors, 1, 10))
+      val futureResults = SearchService.get(SearchRequest(queryInfo.features, search.langSelectors, first, len))
 
       /** Either result or error message */
       val futureSnippets: Future[(Either[(Seq[SnippetResult], Long), String], Duration)] = futureResults.flatMap {
@@ -86,7 +88,7 @@ object Application extends Controller {
 
 
     } getOrElse {
-      Future.successful(Ok(views.html.search(EmptySearch, QueryInfo("", None, Set.empty), Left((Seq.empty, 0)), Duration.Zero)))
+      Future.successful(Ok(views.html.search(EmptySearch, QueryInfo("", None, Set.empty, 1), Left((Seq.empty, 0)), Duration.Zero)))
     }
 
   }

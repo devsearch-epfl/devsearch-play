@@ -30,4 +30,4 @@ case class SnippetResult(user: String, repo: String, path: String, startLine: In
   def extendedEndLine = endLine + 3
 }
 
-case class QueryInfo(query : String, detectedLang : Option[String], features : Set[Feature])
+case class QueryInfo(query : String, detectedLang : Option[String], features : Set[Feature], page : Int)
