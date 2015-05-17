@@ -183,7 +183,7 @@
                                                     <li class="collection-header">
                                                         <b>Matched Features</b>
                                                     </li>
-                                                    @entry.featureList.map{ feature =>
+                                                    @entry.featureList.map(Utils.toPrettyString).map{ feature =>
                                                     <li class="collection-item">
                                                         @feature
                                                     </li>

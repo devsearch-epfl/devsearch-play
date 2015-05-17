@@ -44,7 +44,7 @@ object Utils {
     case VarFeature(position, name)  =>
       "Variable '"+ name +"'"
     case _ =>
-      f.key
+      f.toString
   }
 
 }

@@ -6,7 +6,7 @@ import devsearch.features.Feature
 /**
  * Created by dengels on 07/05/15.
  */
-case class SnippetResult(user: String, repo: String, path: String, startLine: Int, endLine : Int, scoreBreakDown : Map[String, Double], featureList : Set[String], code : Option[String]){
+case class SnippetResult(user: String, repo: String, path: String, startLine: Int, endLine : Int, scoreBreakDown : Map[String, Double], featureList : Set[Feature], code : Option[String]){
 
   def previewUrl = s"https://github.com/$user/$repo/blob/master/${path}#L$startLine-L$endLine"
 

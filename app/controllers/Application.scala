@@ -65,7 +65,7 @@ object Application extends Controller {
         QueryInfo(query, None, Set.empty)
       }
 
-      val futureResults = SearchService.get(SearchRequest(queryInfo.features.map(_.key), search.langSelectors))
+      val futureResults = SearchService.get(SearchRequest(queryInfo.features, search.langSelectors, 1, 10))
 
       /** Either result or error message */
       val futureSnippets: Future[(Either[(Seq[SnippetResult], Long), String], Duration)] = futureResults.flatMap {
