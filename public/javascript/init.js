@@ -15,7 +15,7 @@ $(function () {
     // Disactivate input on click for pagination
     $('ul.pagination input').click(function (e) {
         //$(e.target).hide();
-        var parent = $(e.target).parents('ul.pagination');
+        var parent = $(e.target).parents('.col');
         var row = $(parent).parent('.row');
         parent.hide();
         row.append('<div class="col s12 progress white"><div class="indeterminate blue"></div></div>');

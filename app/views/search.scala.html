@@ -210,29 +210,31 @@
                 @results match {
                     case Left((_, nbResults)) if nbResults != 0 => {
                         <div class="row center">
-                            <ul class="pagination">
+                            <div class="col s12">
+                                <ul class="pagination center">
 
-                                <li class="disabled">
-                                    <i class="mdi-navigation-chevron-left"></i>
-                                </li>
-                                @* Page before *@
-                                @for(i <- math.max(1, queryInfo.page - 2) until queryInfo.page) {
-                                    <li class="waves-effect">
-                                        <input type="submit" name="page" value="@i">
+                                    <li class="disabled">
+                                        <i class="mdi-navigation-chevron-left"></i>
                                     </li>
-                                }
+                                    @* Page before *@
+                                    @for(i <- math.max(1, queryInfo.page - 2) until queryInfo.page) {
+                                        <li class="waves-effect">
+                                            <input type="submit" name="page" value="@i">
+                                        </li>
+                                    }
 
-                                <li class="active blue"><a href="#!">@queryInfo.page</a></li>
-                                @* Pages after *@
-                                @for(i <- (queryInfo.page + 1) to math.min(Utils.lastPage(nbResults), queryInfo.page + 2)) {
-                                    <li class="waves-effect">
-                                        <input type="submit" name="page" value="@i">
+                                    <li class="active blue"><a href="#!">@queryInfo.page</a></li>
+                                    @* Pages after *@
+                                    @for(i <- (queryInfo.page + 1) to math.min(Utils.lastPage(nbResults), queryInfo.page + 2)) {
+                                        <li class="waves-effect">
+                                            <input type="submit" name="page" value="@i">
+                                        </li>
+                                    }
+                                    <li class="disabled">
+                                        <i class="mdi-navigation-chevron-right"></i>
                                     </li>
-                                }
-                                <li class="disabled">
-                                    <i class="mdi-navigation-chevron-right"></i>
-                                </li>
-                            </ul>
+                                </ul>
+                            </div>
                         </div>
                     }
                     case _ => {}
