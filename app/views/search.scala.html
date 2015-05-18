@@ -38,7 +38,7 @@
             $.each(scores, function(key, value){
                 var ctx = $(value.id).get(0).getContext("2d");;
                 var data = {
-                    labels: ["Feature Density", "Cluster Size", "Ratio of Matches"],
+                    labels: ["Feature Density", "Cluster Size", "Ratio of Matches", "Rarity"],
                     datasets: [
                         {
                             label: "Score Breakdown",
@@ -49,7 +49,7 @@
                             pointHighlightFill: "#fff",
                             pointHighlightStroke: "rgba(33, 150, 243, 1)",
 
-                            data: [value.density, value.size, value.ratioOfMatches]
+                            data: [value.density, value.size, value.ratioOfMatches, value.rarity]
                         }
                     ]
                 };
