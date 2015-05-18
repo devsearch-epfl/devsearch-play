@@ -71,7 +71,7 @@
             <div class="modal-content">
                 <h4>Detected Features</h4>
                 <ul class="collection">
-                @queryInfo.features.map(Utils.toPrettyString).map { feature =>
+                @queryInfo.features.map(f => Utils.toPrettyString(f)).map { feature =>
                     <li class="collection-item">@feature</li>
                 }
                 </ul>
@@ -183,7 +183,7 @@
                                                         <li class="collection-header">
                                                             <b>Matched Features</b>
                                                         </li>
-                                                        @entry.featureList.map(Utils.toPrettyString).map { feature =>
+                                                        @entry.featureList.map(f => Utils.toPrettyString(Utils.hackGuessFeatureObject(f), withLine = true)).map { feature =>
                                                             <li class="collection-item">
                                                                 @feature
                                                             </li>
