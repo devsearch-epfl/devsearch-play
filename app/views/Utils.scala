@@ -16,40 +16,23 @@ object Utils {
    */
   def toPrettyString(f: Feature, withLine : Boolean = false): String = {
     val res = f match {
-      case ClassNameFeature(position, name) =>
-        "Class '" + name + "'"
-      case InheritanceFeature(position, className, superClassName) =>
-        "'" + className + "' inherits from '" + superClassName + "'"
-      case FieldFeature(position, name) =>
-        "Field '" + name + "'"
-      case FunctionFieldFeature(position, name, args) =>
-        "'" + name + "' with Arguments '" + args + "'"
-      case FunNameFeature(position, name) =>
-        "Function '" + name + "'"
-      case ArgNameFeature(position, name) =>
-        "Argument '" + name + "'"
-      case ParametricFunFeature(position) =>
-        "Parametric Function"
-      case AbstractFunFeature(position) =>
-        "Abstract Function"
-      case OverridingFunFeature(position) =>
-        "Overriding Function"
-      case ThrowsFeature(position, exception) =>
-        "Throws '" + exception + "'"
-      case ImportFeature(position, domain) =>
-        "Import '" + domain + "'"
-      case MapCallFeature(position) =>
-        "Map Call"
-      case FlatMapCallFeature(position) =>
-        "FlatMap Call"
-      case ControlFeature(position, ctrl) =>
-        "Control Statement '" + ctrl + "'"
-      case TypeRefFeature(position, path) =>
-        "Type Reference '" + path + "'"
-      case TypedVarFeature(position, variableType, variableName) =>
-        "Variable '" + variableName + "' of Type '" + variableType + "'"
-      case VarFeature(position, name) =>
-        "Variable '" + name + "'"
+      case ClassNameFeature(position, name) => s"Class '$name'"
+      case InheritanceFeature(position, className, superClassName) => s"'$className' inherits from '$superClassName'"
+      case FieldFeature(position, name) => s"Field '$name'"
+      case FunctionFieldFeature(position, name, args) => s"Function call '$name' with $args Arguments"
+      case FunNameFeature(position, name) => s"Function '$name'"
+      case ArgNameFeature(position, name) => s"Argument '$name'"
+      case ParametricFunFeature(position) => "Parametric function"
+      case AbstractFunFeature(position) => "Abstract function"
+      case OverridingFunFeature(position) => "Overriding function"
+      case ThrowsFeature(position, exception) => s"Throws '$exception'"
+      case ImportFeature(position, domain) => s"Import '$domain'"
+      case MapCallFeature(position) => "Map call"
+      case FlatMapCallFeature(position) => "FlatMap call"
+      case ControlFeature(position, ctrl) => s"Control flow statement '$ctrl'"
+      case TypeRefFeature(position, path) => s"Type reference '$path'"
+      case TypedVarFeature(position, variableType, variableName) => s"Variable '$variableName' of type '$variableType'"
+      case VarFeature(position, name) => s"Variable '$name'"
       case _ =>
         f.toString
     }
@@ -94,7 +77,7 @@ object Utils {
       case FMCF => FlatMapCallFeature(f.pos)
       case CF(ctrl) => ControlFeature(f.pos, ctrl)
       case TRF(typ) => TypeRefFeature(f.pos, typ)
-      case TVF(name, typ) => TypedVarFeature(f.pos, name, typ)
+      case TVF(name, typ) => TypedVarFeature(f.pos, typ, name)
       case VF(name) => VarFeature(f.pos, name)
       case _ => f
   }
