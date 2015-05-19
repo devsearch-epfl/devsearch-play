@@ -5,11 +5,13 @@ import akka.pattern._
 import akka.util.Timeout
 import devsearch.lookup._
 import play.libs.Akka
+import play.api.Play.current
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent._
 import scala.concurrent.duration.{FiniteDuration, _}
 import scala.language.postfixOps
+import play.api.cache.Cache
 
 object SearchService {
 
@@ -17,7 +19,7 @@ object SearchService {
   val clusterClient = Akka.system.actorOf(ClusterClient.props(initialContacts), "clusterClient")
 
 
-  def get(request: SearchRequest, maxDuration: FiniteDuration = 20 seconds): Future[(SearchResult, Duration)] = {
+  def get(request: SearchRequest, maxDuration: FiniteDuration = 20 seconds): Future[(SearchResult, Duration)] = Cache.getOrElse(request.toString, 86400){
 
     val startTime = System.nanoTime()
 
