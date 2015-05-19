@@ -36,9 +36,9 @@
             var scores=@jsResults.mkString("[", ", ", "]");
 
             $.each(scores, function(key, value){
-                var ctx = $(value.id).get(0).getContext("2d");;
+                var ctx = $(value.id).get(0).getContext("2d");
                 var data = {
-                    labels: ["Feature Density", "Cluster Size", "Ratio of Matches", "Rarity"],
+                    labels: ["Feature Density", "Cluster Size", "Ratio of Matches", "Rarity", "Repository Rank"],
                     datasets: [
                         {
                             label: "Score Breakdown",
@@ -49,7 +49,7 @@
                             pointHighlightFill: "#fff",
                             pointHighlightStroke: "rgba(33, 150, 243, 1)",
 
-                            data: [value.density, value.size, value.ratioOfMatches, value.rarity]
+                            data: [value.density, value.size, value.ratioOfMatches, value.rarity, value.repoRank]
                         }
                     ]
                 };

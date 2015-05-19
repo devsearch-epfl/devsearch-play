@@ -17,7 +17,7 @@ object SearchService {
   val clusterClient = Akka.system.actorOf(ClusterClient.props(initialContacts), "clusterClient")
 
 
-  def get(request: SearchRequest, maxDuration: FiniteDuration = 10 seconds): Future[(SearchResult, Duration)] = {
+  def get(request: SearchRequest, maxDuration: FiniteDuration = 20 seconds): Future[(SearchResult, Duration)] = {
 
     val startTime = System.nanoTime()
 
