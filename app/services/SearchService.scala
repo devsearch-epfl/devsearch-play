@@ -15,24 +15,35 @@ import play.api.cache.Cache
 
 object SearchService {
 
+  val CacheExpiration = (1 day).toSeconds.toInt
+
   val initialContacts = Set(Akka.system.actorSelection("akka.tcp://lookupCluster@127.0.0.1:2555/user/receptionist"))
   val clusterClient = Akka.system.actorOf(ClusterClient.props(initialContacts), "clusterClient")
 
 
-  def get(request: SearchRequest, maxDuration: FiniteDuration = 20 seconds): Future[(SearchResult, Duration)] = Cache.getOrElse(request.toString, 86400){
+  def get(request: SearchRequest, maxDuration: FiniteDuration = 20 seconds): Future[(SearchResult, Duration)] = {
 
-    val startTime = System.nanoTime()
+    val cacheKey = request.toString
 
-    implicit val timeout = new Timeout(maxDuration)
+    val resOpt = Cache.getAs[(SearchResult, Duration)](cacheKey)
+    resOpt.map(Future(_)).getOrElse {
+      val startTime = System.nanoTime()
 
-    val result = (clusterClient ? ClusterClient.Send("/user/lookup", request, localAffinity = true))
-      .collect { case s: SearchResult => s }
-      .recover {
-      case e: AskTimeoutException => SearchResultError("Timeout. Could not get a response from the search back-end in time.")
+      implicit val timeout = new Timeout(maxDuration)
+      def nanoTime = (System.nanoTime() - startTime) nanoseconds
+
+      val lookupResults = (clusterClient ? ClusterClient.Send("/user/lookup", request, localAffinity = true))
+
+      lookupResults.collect {
+        case s: SearchResult =>
+          val res = (s, nanoTime)
+          Cache.set(cacheKey, res, CacheExpiration)
+          res
+      } recover {
+        case e: AskTimeoutException =>
+          val error = SearchResultError("Timeout. Could not get a response from the search back-end in time.")
+          (error, nanoTime)
+      }
     }
-
-    val timeTaken = result.map(_ => (System.nanoTime() - startTime) nanoseconds)
-
-    for (res <- result; t <- timeTaken) yield (res, t)
   }
 }
