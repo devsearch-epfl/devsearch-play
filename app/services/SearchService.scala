@@ -23,22 +23,34 @@ object SearchService {
 
   def get(request: SearchRequest, maxDuration: FiniteDuration = 20 seconds): Future[(SearchResult, Duration)] = {
 
+    // Requests are cached depending on the list of features not the exact code
     val cacheKey = request.toString
 
+    // check the cache first
     val resOpt = Cache.getAs[(SearchResult, Duration)](cacheKey)
     resOpt.map(Future(_)).getOrElse {
+
       val startTime = System.nanoTime()
 
       implicit val timeout = new Timeout(maxDuration)
+
+      // This is "lazy" it will only be computed when used
       def nanoTime = (System.nanoTime() - startTime) nanoseconds
 
       val lookupResults = (clusterClient ? ClusterClient.Send("/user/lookup", request, localAffinity = true))
 
       lookupResults.collect {
-        case s: SearchResult =>
+        case s: SearchResultSuccess =>
           val res = (s, nanoTime)
+
+          // We cache successfull requests
           Cache.set(cacheKey, res, CacheExpiration)
           res
+
+        case s: SearchResultError =>
+          // failed requests are not cached
+          (s, nanoTime)
+
       } recover {
         case e: AskTimeoutException =>
           val error = SearchResultError("Timeout. Could not get a response from the search back-end in time.")
