@@ -4,7 +4,7 @@ This is the front-end web application for DevSearch.
 
 ## Dependency import
 
-- The devsearch-ast has been imported by locally publishing it. Clone the devsearch-ast repo, cd into it and run sbt publishLocal
+- The devsearch-ast has been imported by locally publishing it. Clone the devsearch-ast repository, cd into it and run sbt publishLocal
 
 ## Setup
 
